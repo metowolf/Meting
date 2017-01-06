@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.0 RC
+ * @version  0.9.1 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -79,7 +79,7 @@ class Meting
     private function pickup($array,$rule){
         $t=explode('#',$rule);
         foreach($t as $vo){
-            if($array==null)break;
+            if($array==null)return null;
             $array=$array[$vo];
         }
         return $array;
@@ -87,7 +87,8 @@ class Meting
 
     private function clean($raw,$rule){
         if(!empty($rule))$raw=self::pickup($raw,$rule);
-        if(!isset($raw[0]))$raw=array($raw);
+        if($raw==null)$raw=array();
+        elseif(!isset($raw[0]))$raw=array($raw);
         $result=array();
         foreach($raw as $vo){
             $result[]=call_user_func_array(array($this,'format_'.$this->_SITE),array($vo));
@@ -689,7 +690,7 @@ class Meting
             if($vo['rate']<=$this->_temp['br']&&$vo['rate']>$max){
                 $max=$vo['rate'];
                 $url=array(
-                    'url' => $vo['filePath'],
+                    'url' => str_replace('http','https',$vo['filePath']),
                     'br'  => $vo['rate'],
                 );
             }
