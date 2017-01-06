@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.1 RC
+ * @version  0.9.2 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -769,7 +769,7 @@ class Meting
             'id'       => $data['id'],
             'name'     => $data['name'],
             'artist'   => array(),
-            'pic_id'   => number_FORMAT($data['al']['pic'],0,'',''),
+            'pic_id'   => number_format($data['al']['pic'],0,'',''),
             'url_id'   => $data['id'],
             'lyric_id' => $data['id'],
         );
