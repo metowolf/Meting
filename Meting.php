@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.2 RC
+ * @version  0.9.3 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -617,27 +617,13 @@ class Meting
         foreach($t as $key=>$vo)$result['data'][0][$key]=$vo;
         return json_encode($result);
     }
-
     private function netease_pickey($id){
-        $byte1[]=$this->Str2Arr('3go8&$8*3*3h0k(2)2');
-        $byte2[]=$this->Str2Arr($id);
-        $magic=$byte1[0];
-        $song_id=$byte2[0];
-        for($i=0;$i<count($song_id);$i++)$song_id[$i]=$song_id[$i]^$magic[$i%count($magic)];
-        $result=base64_encode(md5($this->Arr2Str($song_id),1));
-        $result=str_replace('/','_',$result);
-        $result=str_replace('+','-',$result);
+        $magic=str_split('3go8&$8*3*3h0k(2)2');
+        $song_id=str_split($id);
+        for($i=0;$i<count($song_id);$i++)$song_id[$i]=chr(ord($song_id[$i])^ord($magic[$i%count($magic)]));
+        $result=base64_encode(md5(implode('',$song_id),1));
+        $result=str_replace(['/','+'],['_','-'],$result);
         return $result;
-    }
-    protected function Str2Arr($string){
-        $bytes=array();
-        for($i=0;$i<strlen($string);$i++)$bytes[]=ord($string[$i]);
-        return $bytes;
-    }
-    protected function Arr2Str($bytes){
-        $str='';
-        for($i=0;$i<count($bytes);$i++)$str.=chr($bytes[$i]);
-        return $str;
     }
     /**
      * URL - 歌曲地址转换函数
@@ -769,7 +755,7 @@ class Meting
             'id'       => $data['id'],
             'name'     => $data['name'],
             'artist'   => array(),
-            'pic_id'   => number_format($data['al']['pic'],0,'',''),
+            'pic_id'   => $data['al']['pic'],
             'url_id'   => $data['id'],
             'lyric_id' => $data['id'],
         );
