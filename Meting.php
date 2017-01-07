@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.3 RC
+ * @version  0.9.3.1 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -632,7 +632,7 @@ class Meting
     private function netease_url($result){
         $data=json_decode($result,1);
         $url=array(
-            'url' => $data['data'][0]['url'],
+            'url' => str_replace('http:','https:',$data['data'][0]['url']),
             'br'  => $data['data'][0]['br']/1000,
         );
         return json_encode($url);
