@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.5 RC
+ * @version  0.9.5.1 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -676,7 +676,7 @@ class Meting
             if($vo['rate']<=$this->_temp['br']&&$vo['rate']>$max){
                 $max=$vo['rate'];
                 $url=array(
-                    'url' => str_replace('http','https',$vo['filePath']),
+                    'url' => str_replace('http:','https:',$vo['filePath']),
                     'br'  => $vo['rate'],
                 );
             }
