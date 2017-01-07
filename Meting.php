@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.3.1 RC
+ * @version  0.9.5 RC
  *
  * Suppose  search   song    album   playlist    lyric
  * netease  *        *       *       *           *
@@ -527,7 +527,7 @@ class Meting
             case 'xiami':
                 $data=$this->format(false)->song($id);
                 $url=json_decode($data,1)['data']['song']['logo'];
-                $url=str_replace('_1.','_2.',$url);
+                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@!c-400-400';
                 break;
             case 'kugou':
                 $API=array(
@@ -755,10 +755,14 @@ class Meting
             'id'       => $data['id'],
             'name'     => $data['name'],
             'artist'   => array(),
-            'pic_id'   => $data['al']['pic'],
+            'pic_id'   => $data['al']['pic_str']?:$data['al']['pic'],
             'url_id'   => $data['id'],
             'lyric_id' => $data['id'],
         );
+        if(isset($data['al']['picUrl'])){
+            preg_match('/\/(\d+)\./',$data['al']['picUrl'],$match);
+            $result['pic_id']=$match[1];
+        }
         foreach($data['ar'] as $vo)$result['artist'][]=$vo['name'];
         return $result;
     }
