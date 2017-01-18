@@ -25,6 +25,7 @@ coming soon...
 require_once 'Meting.php';
 ```
 
+### Basic usage
 ```php
 // Initialize to netease API
 $API = new Meting('netease');
@@ -33,13 +34,24 @@ $API = new Meting('netease');
 $data = $API->format(true)->search('Soldier');
 ```
 
-## Demo
+## Usage
+ - [x] search songs
+ - [x] get playlist detail
+ - [x] get album detail
+ - [x] get song detail
+ - [x] get artists detail
+ - [x] get url
+ - [x] get pic
+ - [x] get lyric
+ - [x] raw data / format data
+
+## Demo#1
 ```bash
 $ git clone https://github.com/metowolf/NeteaseCloudMusicApi.git
 $ cd Meting
 $ php -S 127.0.0.1:8080
 ```
-open http://127.0.0.1:8080/demo/simple-test
+then open http://127.0.0.1:8080/demo/simple-test in Browser
 
 ## License
 Meting is under the MIT license.
