@@ -1,21 +1,12 @@
 <?php
 /*!
  * Meting music framework
+ * https://i-meto.com
+ * Version 1.0.0
  *
- * @author   METO Sheel <i@i-meto.com>
- * @website  https://i-meto.com
- * @license  http://opensource.org/licenses/MIT
- * @version  0.9.99 RC
- *
- * Suppose  search   song    album   playlist    lyric  artist
- * netease  *        *       *       *           *      *
- * tencent  *        *       *       *           *      *
- * xiami    *        *       *       *           *      *
- * kugou    *        *       *       *           *      *
- * baidu    *        *       *       *           *      *
+ * Copyright 2016, METO Sheel <i@i-meto.com>
+ * Released under the MIT license
  */
-
-namespace metowolf\Meting;
 
 class Meting
 {
@@ -112,12 +103,12 @@ class Meting
                 'method' => 'GET',
                 'url'    => 'https://c.y.qq.com/soso/fcgi-bin/search_cp',
                 'body'   => array(
-                    'p'       => $page,
-                    'n'       => $limit,
-                    'w'       => $keyword,
-                    'aggr'    => 1,
-                    'lossless'=> 1,
-                    'cr'      => 1,
+                    'p'        => $page,
+                    'n'        => $limit,
+                    'w'        => $keyword,
+                    'aggr'     => 1,
+                    'lossless' => 1,
+                    'cr'       => 1,
                 ),
                 'decode' => 'jsonp2json',
                 'format' => 'data#song#list',
@@ -222,14 +213,14 @@ class Meting
                 'method' => 'GET',
                 'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method' => 'baidu.ting.song.play',
-                    'songid' => $id,
-                    'format' => 'json',
-                    'from'   => 'ios',
-                    'channel'=> '(null)',
-                    'cuid'   => 'appstore',
-                    'from'   => 'ios',
-                    'version'=> '5.9.5',
+                    'method'  => 'baidu.ting.song.play',
+                    'songid'  => $id,
+                    'format'  => 'json',
+                    'from'    => 'ios',
+                    'channel' => '(null)',
+                    'cuid'    => 'appstore',
+                    'from'    => 'ios',
+                    'version' => '5.9.5',
                 ),
                 'format' => 'songinfo',
             ),
@@ -428,14 +419,14 @@ class Meting
                 'method' => 'GET',
                 'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method' => 'baidu.ting.diy.gedanInfo',
-                    'listid' => $id,
-                    'format' => 'json',
-                    'from'   => 'ios',
-                    'channel'=> '(null)',
-                    'cuid'   => 'appstore',
-                    'from'   => 'ios',
-                    'version'=> '5.9.5',
+                    'method'  => 'baidu.ting.diy.gedanInfo',
+                    'listid'  => $id,
+                    'format'  => 'json',
+                    'from'    => 'ios',
+                    'channel' => '(null)',
+                    'cuid'    => 'appstore',
+                    'from'    => 'ios',
+                    'version' => '5.9.5',
                 ),
                 'format' => 'content',
             ),
@@ -485,7 +476,7 @@ class Meting
                     "token"     => "",
                     "behavior"  => "download",
                     "clientver" => "1",
-                    "resource"=>array(array(
+                    "resource"  => array(array(
                         "id"   => 0,
                         "type" => "audio",
                         "hash" => $id,
@@ -562,14 +553,14 @@ class Meting
                 'method' => 'GET',
                 'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'=>'baidu.ting.song.lry',
-                    'songid'   => $id,
-                    'format'=>'json',
-                    'from'=>'ios',
-                    'channel'=>'(null)',
-                    'cuid'=>'appstore',
-                    'from'=>'ios',
-                    'version'=>'5.9.5',
+                    'method'  => 'baidu.ting.song.lry',
+                    'songid'  => $id,
+                    'format'  => 'json',
+                    'from'    => 'ios',
+                    'channel' => '(null)',
+                    'cuid'    => 'appstore',
+                    'from'    => 'ios',
+                    'version' => '5.9.5',
                 ),
             ),
         );

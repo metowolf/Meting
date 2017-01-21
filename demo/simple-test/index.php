@@ -4,7 +4,7 @@
  * 这是一个简单的调用例子，你可以直接使用类似下面的语句进行 API 调用
  * 其中 format(1) 表示使用内置格式化输出，否则将直接输出原 json 值
  */
-
+ 
 require '../../Meting.php';
 
 $data=(new Meting('netease'))->search('我的天空');
