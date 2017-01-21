@@ -5,7 +5,7 @@
  * @author   METO Sheel <i@i-meto.com>
  * @website  https://i-meto.com
  * @license  http://opensource.org/licenses/MIT
- * @version  0.9.8 RC
+ * @version  0.9.99 RC
  *
  * Suppose  search   song    album   playlist    lyric  artist
  * netease  *        *       *       *           *      *
@@ -14,13 +14,20 @@
  * kugou    *        *       *       *           *      *
  * baidu    *        *       *       *           *      *
  */
+
+namespace metowolf\Meting;
+
 class Meting
 {
     protected $_SITE;
     protected $_TEMP;
     protected $_FORMAT = false;
 
-    function __construct($v){
+    function __construct($v='netease'){
+        self::site($v);
+    }
+
+    public function site($v){
         $this->_SITE=$v;
     }
 
@@ -78,10 +85,7 @@ class Meting
         if(!empty($rule))$raw=self::pickup($raw,$rule);
         if($raw==null)$raw=array();
         elseif(!isset($raw[0]))$raw=array($raw);
-        $result=array();
-        foreach($raw as $vo){
-            $result[]=call_user_func_array(array($this,'format_'.$this->_SITE),array($vo));
-        }
+        $result=array_map(array($this,'format_'.$this->_SITE),$raw);
         return $result;
     }
 
@@ -572,18 +576,18 @@ class Meting
         return self::curl($API[$this->_SITE]);
     }
 
-    public function pic($id){
+    public function pic($id,$size=300){
         switch($this->_SITE){
             case 'netease':
-                $url='https://p4.music.126.net/'.self::netease_pickey($id).'/'.$id.'.jpg?param=300z300&quality=100';
+                $url='https://p3.music.126.net/'.self::netease_pickey($id).'/'.$id.'.jpg?param='.$size.'z'.$size.'&quality=100';
                 break;
             case 'tencent':
-                $url='https://y.gtimg.cn/music/photo_new/T002R300x300M000'.$id.'.jpg?max_age=2592000';
+                $url='https://y.gtimg.cn/music/photo_new/T002R'.$size.'x'.$size.'M000'.$id.'.jpg?max_age=2592000';
                 break;
             case 'xiami':
                 $data=$this->format(false)->song($id);
                 $url=json_decode($data,1)['data']['song']['logo'];
-                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@!c-400-400';
+                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_90q_1c.webp';
                 break;
             case 'kugou':
                 $API=array(
