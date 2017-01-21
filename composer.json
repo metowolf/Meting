@@ -1,4 +1,3 @@
-
 {
 	"name": "metowolf/meting",
 	"type": "library",
@@ -16,7 +15,7 @@
 	],
 	"require": {
 		"php": ">=5.3",
-        "ext-curl": "*",
+        "ext-curl": "*"
 	},
 	"autoload": {
         "psr-4": {
