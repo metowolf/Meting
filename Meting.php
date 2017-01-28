@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.0.0
+ * Version 1.0.1
  *
  * Copyright 2016, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -44,6 +44,7 @@ class Meting
         }
         curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
         curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($curl,CURLOPT_TIMEOUT,10);
         curl_setopt($curl,CURLOPT_COOKIE,$BASE['cookie']);
         curl_setopt($curl,CURLOPT_REFERER,$BASE['referer']);
         curl_setopt($curl,CURLOPT_USERAGENT,$BASE['useragent']);
@@ -809,6 +810,7 @@ class Meting
             'pic_id'    => $data['al']['pic_str']?:$data['al']['pic'],
             'url_id'    => $data['id'],
             'lyric_id'  => $data['id'],
+            'source'    => 'netease',
         );
         if(isset($data['al']['picUrl'])){
             preg_match('/\/(\d+)\./',$data['al']['picUrl'],$match);
@@ -826,6 +828,7 @@ class Meting
             'pic_id'    => $data['albummid'],
             'url_id'    => $data['songmid'],
             'lyric_id'  => $data['songmid'],
+            'source'    => 'tencent',
         );
         foreach($data['singer'] as $vo)$result['artist'][]=$vo['name'];
         return $result;
@@ -838,6 +841,7 @@ class Meting
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
+            'source'   => 'xiami',
         );
         return $result;
     }
@@ -849,6 +853,7 @@ class Meting
             'url_id'   => $data['hash'],
             'pic_id'   => $data['hash'],
             'lyric_id' => $data['hash'],
+            'source'   => 'kugou',
         );
         list($result['artist'],$result['name'])=explode(' - ',$data['filename']?:$data['fileName']);
         $result['artist']=explode('、',$result['artist']);
@@ -862,6 +867,7 @@ class Meting
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
+            'source'   => 'baidu',
         );
         return $result;
     }
