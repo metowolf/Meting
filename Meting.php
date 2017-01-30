@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.0.1
+ * Version 1.0.2
  *
  * Copyright 2016, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -641,7 +641,13 @@ class Meting
     private function netease_AESECB($API){
         $KEY='7246674226682325323F5E6544673A51';
         $body=json_encode($API['body']);
-        $body=openssl_encrypt($body,'aes-128-ecb',hex2bin($KEY));
+        if(function_exists('openssl_encrypt')){
+            $body=openssl_encrypt($body,'aes-128-ecb',hex2bin($KEY));
+        }
+        else{
+            $PAD=16-(strlen($body)%16);
+            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128,hex2bin($KEY),$body.str_repeat(chr($PAD),$PAD),MCRYPT_MODE_ECB));
+        }
         $body=strtoupper(bin2hex(base64_decode($body)));
 
         $API['body']=array(
