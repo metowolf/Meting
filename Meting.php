@@ -44,7 +44,7 @@ class Meting
         }
         curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
         curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,10);
-        curl_setopt($curl,CURLOPT_TIMEOUT,10);
+        curl_setopt($curl,CURLOPT_TIMEOUT,20);
         curl_setopt($curl,CURLOPT_COOKIE,$BASE['cookie']);
         curl_setopt($curl,CURLOPT_REFERER,$BASE['referer']);
         curl_setopt($curl,CURLOPT_USERAGENT,$BASE['useragent']);
@@ -854,14 +854,14 @@ class Meting
     private function format_kugou($data){
         $result=array(
             'id'       => $data['hash'],
-            'name'     => "",
+            'name'     => $data['filename']?:$data['fileName'],
             'artist'   => array(),
             'url_id'   => $data['hash'],
             'pic_id'   => $data['hash'],
             'lyric_id' => $data['hash'],
             'source'   => 'kugou',
         );
-        list($result['artist'],$result['name'])=explode(' - ',$data['filename']?:$data['fileName']);
+        list($result['artist'],$result['name'])=explode(' - ',$result['name'],2);
         $result['artist']=explode('、',$result['artist']);
         return $result;
     }
