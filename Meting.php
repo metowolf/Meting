@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.0.2
+ * Version 1.1.0 dev
  *
  * Copyright 2016, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -12,10 +12,24 @@ class Meting
 {
     protected $_SITE;
     protected $_TEMP;
+    protected $_RETRY = 3;
     protected $_FORMAT = false;
 
-    function __construct($v='netease'){
-        self::site($v);
+    private $data;
+    private $info;
+    private $error;
+    private $status;
+
+    public function __construct($v='netease'){
+        $this->site($v);
+    }
+
+    public function __toString(){
+        if($this->error)return json_encode(array(
+            'code'=>$this->error,
+            'status'=>$this->status,
+        ));
+        else return $this->data;
     }
 
     public function site($v){
@@ -29,53 +43,56 @@ class Meting
 
     private function curl($API){
         if(isset($API['encode']))$API=call_user_func_array(array($this,$API['encode']),array($API));
-
-        $BASE=self::curlset();
+        $BASE=$this->curlset();
         $curl=curl_init();
         if($API['method']=='POST'){
             if(is_array($API['body']))$API['body']=http_build_query($API['body']);
-            curl_setopt($curl,CURLOPT_URL,$API['url']);
-            curl_setopt($curl,CURLOPT_POSTFIELDS,$API['body']);
             curl_setopt($curl,CURLOPT_POST,1);
+            curl_setopt($curl,CURLOPT_POSTFIELDS,$API['body']);
         }
         elseif($API['method']=='GET'){
             if(isset($API['body']))$API['url']=$API['url'].'?'.http_build_query($API['body']);
-            curl_setopt($curl,CURLOPT_URL,$API['url']);
         }
-        curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($curl,CURLOPT_HEADER,0);
         curl_setopt($curl,CURLOPT_TIMEOUT,20);
+        curl_setopt($curl,CURLOPT_ENCODING,'');
+        curl_setopt($curl,CURLOPT_IPRESOLVE,1);
+        curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,0);
+        curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($curl,CURLOPT_URL,$API['url']);
         curl_setopt($curl,CURLOPT_COOKIE,$BASE['cookie']);
         curl_setopt($curl,CURLOPT_REFERER,$BASE['referer']);
         curl_setopt($curl,CURLOPT_USERAGENT,$BASE['useragent']);
-        $result=curl_exec($curl);
-        curl_close($curl);
-
-        if(isset($API['decode']))$result=call_user_func_array(array($this,$API['decode']),array($result));
-
-        if($this->_FORMAT){
-            if(isset($API['format'])){
-                $result=json_decode($result,1);
-                $result=self::clean($result,$API['format']);
-                $result=json_encode($result);
-            }
-            $this->_FORMAT=false;
+        for($i=0;$i<=$this->_RETRY;$i++){
+            $this->data=curl_exec($curl);
+            $this->info=curl_getinfo($curl);
+            $this->error=curl_errno($curl);
+            $this->status=$this->error?curl_error($curl):'';
+            if(!$this->error)break;
         }
-        return $result;
+        curl_close($curl);
+        if(isset($API['decode']))$this->data=call_user_func_array(array($this,$API['decode']),array($this->data));
+        if($this->_FORMAT&&isset($API['format'])){
+            $this->data=json_decode($this->data,1);
+            $this->data=$this->clean($this->data,$API['format']);
+            $this->data=json_encode($this->data);
+        }
+        return $this;
     }
 
     private function pickup($array,$rule){
         $t=explode('#',$rule);
         foreach($t as $vo){
-            if($array==null)return null;
+            if(is_null($array))return null;
             $array=$array[$vo];
         }
         return $array;
     }
 
     private function clean($raw,$rule){
-        if(!empty($rule))$raw=self::pickup($raw,$rule);
-        if($raw==null)$raw=array();
+        if(!empty($rule))$raw=$this->pickup($raw,$rule);
+        if(is_null($raw))$raw=array();
         elseif(!isset($raw[0]))$raw=array($raw);
         $result=array_map(array($this,'format_'.$this->_SITE),$raw);
         return $result;
@@ -161,7 +178,7 @@ class Meting
                 'format' => 'result#song_info#song_list',
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function song($id){
@@ -226,7 +243,7 @@ class Meting
                 'format' => 'songinfo',
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function album($id){
@@ -291,7 +308,7 @@ class Meting
                 'format' => 'songlist',
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function artist($id,$limit=50){
@@ -363,7 +380,7 @@ class Meting
                 'format' => 'songlist',
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function playlist($id){
@@ -432,7 +449,7 @@ class Meting
                 'format' => 'content',
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function url($id,$br=320){
@@ -469,21 +486,20 @@ class Meting
             'kugou'=>array(
                 'method' => 'POST',
                 'url'    => 'http://media.store.kugou.com/v1/get_res_privilege',
-                'body'   => array(
+                'body'   => json_encode(array(
                     "relate"    => 1,
                     "userid"    => 0,
                     "vip"       => 0,
-                    "appid"     => 1390,
+                    "appid"     => 1005,
                     "token"     => "",
                     "behavior"  => "download",
-                    "clientver" => "1",
+                    "clientver" => "8493",
                     "resource"  => array(array(
                         "id"   => 0,
                         "type" => "audio",
                         "hash" => $id,
-                    )),
+                    )))
                 ),
-                'encode' => 'kugou_json',
                 'decode' => 'kugou_url',
             ),
             'baidu' => array(
@@ -498,7 +514,7 @@ class Meting
             ),
         );
         $this->_temp['br']=$br;
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function lyric($id){
@@ -565,42 +581,36 @@ class Meting
                 ),
             ),
         );
-        return self::curl($API[$this->_SITE]);
+        return $this->curl($API[$this->_SITE]);
     }
 
     public function pic($id,$size=300){
         switch($this->_SITE){
             case 'netease':
-                $url='https://p3.music.126.net/'.self::netease_pickey($id).'/'.$id.'.jpg?param='.$size.'z'.$size.'&quality=100';
+                $url='https://p3.music.126.net/'.$this->netease_pickey($id).'/'.$id.'.jpg?param='.$size.'z'.$size.'&quality=100';
                 break;
             case 'tencent':
                 $url='https://y.gtimg.cn/music/photo_new/T002R'.$size.'x'.$size.'M000'.$id.'.jpg?max_age=2592000';
                 break;
             case 'xiami':
-                $data=$this->format(false)->song($id);
+                $format=$this->_FORMAT;
+                $data=$this->format(false)->song($id)->format($format);
                 $url=json_decode($data,1)['data']['song']['logo'];
                 $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_90q_1c.webp';
                 break;
             case 'kugou':
-                $API=array(
-                    'method' =>'GET',
-                    'url'    => 'http://tools.mobile.kugou.com/api/v1/singer_header/get_by_hash',
-                    'body'   => array(
-                        'hash'   => $id,
-                        'size'   => 400,
-                        'format' => 'json',
-                    ),
-                );
-                $data=$this->curl($API);
-                $url=json_decode($data,1)['url'];
+                $format=$this->_FORMAT;
+                $data=$this->format(false)->song($id)->format($format);
+                $url=json_decode($data,1)['imgUrl'];
+                $url=str_replace('{size}','400',$url);
                 break;
             case 'baidu':
-                $data=self::song($id);
+                $format=$this->_FORMAT;
+                $data=$this->format(false)->song($id)->format($format);
                 $data=json_decode($data,1);
                 $url=$data['songinfo']['pic_big']?:$data['songinfo']['pic_small'];
         }
-        $arr=array('url'=>$url);
-        return json_encode($arr);
+        return json_encode(array('url'=>$url));
     }
 
     private function curlset(){
@@ -653,10 +663,6 @@ class Meting
         $API['body']=array(
             'eparams'=>$body,
         );
-        return $API;
-    }
-    private function kugou_json($API){
-        $API['body']=json_encode($API['body']);
         return $API;
     }
     private function jsonp2json($jsonp){

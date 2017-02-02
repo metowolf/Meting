@@ -35,15 +35,7 @@ $data = $API->format(true)->search('Soldier');
 ```
 
 ## Usage
- - [x] search songs
- - [x] get playlist detail
- - [x] get album detail
- - [x] get song detail
- - [x] get artists detail
- - [x] get url
- - [x] get pic
- - [x] get lyric
- - [x] raw data / format data
+[wiki/docs](https://github.com/metowolf/Meting/wiki)
 
 ## Demo
 ```bash
