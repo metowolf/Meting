@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.1.0 dev
+ * Version 1.1.1
  *
  * Copyright 2016, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -29,11 +29,12 @@ class Meting
             'code'=>$this->error,
             'status'=>$this->status,
         ));
-        else return $this->data;
+        return $this->data;
     }
 
     public function site($v){
         $this->_SITE=$v;
+        return $this;
     }
 
     public function format($v = true){
@@ -534,15 +535,16 @@ class Meting
                     'url' => 'http://music.163.com/api/song/lyric',
                 ),
                 'encode' => 'netease_AESECB',
+                'decode' => 'netease_lyric',
             ),
             'tencent'=>array(
                 'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg',
+                'url'    => 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
                 'body'   => array(
                     'songmid'  => $id,
-                    'nobase64' => 0,
+                    'g_tk'     => 5381,
                 ),
-                'decode' => 'jsonp2json',
+                'decode' => 'tencent_lyric',
             ),
             'xiami'=>array(
                 'method' => 'GET',
@@ -579,6 +581,7 @@ class Meting
                     'from'    => 'ios',
                     'version' => '5.9.5',
                 ),
+                'decode' => 'baidu_lyric'
             ),
         );
         return $this->curl($API[$this->_SITE]);
@@ -596,7 +599,7 @@ class Meting
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id)->format($format);
                 $url=json_decode($data,1)['data']['song']['logo'];
-                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_90q_1c.webp';
+                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
                 break;
             case 'kugou':
                 $format=$this->_FORMAT;
@@ -618,27 +621,27 @@ class Meting
             'netease'=>array(
                 'referer'   => 'http://music.163.com/',
                 'cookie'    => 'os=linux; appver=1.0.0.1026; osver=Ubuntu%2016.10; MUSIC_U=78d411095f4b022667bc8ec49e9a44cca088df057d987f5feaf066d37458e41c4a7d9447977352cf27ea9fee03f6ec4441049cea1c6bb9b6; __remember_me=true',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.30 Safari/537.36',
+                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'tencent'=>array(
                 'referer'   => 'http://y.qq.com/portal/player.html',
                 'cookie'    => 'qqmusic_uin=12345678; qqmusic_key=12345678; qqmusic_fromtag=30; ts_last=y.qq.com/portal/player.html;',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.30 Safari/537.36',
+                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'xiami'=>array(
                 'referer'   => 'http://h.xiami.com/',
                 'cookie'    => 'user_from=2;XMPLAYER_addSongsToggler=0;XMPLAYER_isOpen=0;_xiamitoken=123456789;',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.30 Safari/537.36',
+                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'kugou'=>array(
                 'referer'   => 'http://www.kugou.com/webkugouplayer/flash/webKugou.swf',
                 'cookie'    => '_WCMID=123456789',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.30 Safari/537.36',
+                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'baidu'=>array(
                 'referer'   => 'http://ting.baidu.com/',
                 'cookie'    => 'BAIDUID=123456789',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.30 Safari/537.36',
+                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
         );
         return $BASE[$this->_SITE];
@@ -791,7 +794,27 @@ class Meting
      * 歌词处理模块
      * 用于规范化歌词输出
      */
+     private function netease_lyric($result){
+         if(!$this->_FORMAT)return $result;
+         $result=json_decode($result,1);
+         $data=array(
+             'lyric'  => $result['lrc']['lyric'],
+             'tlyric' => $result['tlyric']['lyric'],
+         );
+         return json_encode($data);
+     }
+     private function tencent_lyric($result){
+         $result=$this->jsonp2json($result);
+         if(!$this->_FORMAT)return $result;
+         $result=json_decode($result,1);
+         $data=array(
+             'lyric'  => base64_decode($result['lyric']),
+             'tlyric' => base64_decode($result['trans']),
+         );
+         return json_encode($data);
+     }
     private function xiami_lyric($result){
+        if(!$this->_FORMAT)return $result;
         $result=json_decode($result,1);
         $API=array(
             'method' => 'GET',
@@ -805,11 +828,21 @@ class Meting
         return json_encode($arr);
     }
     private function kugou_lyric($result){
+        if(!$this->_FORMAT)return $result;
         $arr=array(
             'lyric' => $result,
         );
         return json_encode($arr);
     }
+    private function baidu_lyric($result){
+        if(!$this->_FORMAT)return $result;
+        $result=json_decode($result,1);
+        $data=array(
+            'lyric' => $result['lrcContent'],
+        );
+        return json_encode($data);
+    }
+
     /**
      * Format - 规范化函数
      * 用于统一返回的参数，可用 ->format() 一次性开关开启
