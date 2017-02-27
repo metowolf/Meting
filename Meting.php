@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.2.0
+ * Version 1.2.0.1
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -34,12 +34,12 @@ class Meting
         $BASE=$this->curlset();
         $curl=curl_init();
         if($API['method']=='POST'){
-            if(!empty($API['body']))$API['body']=http_build_query($API['body']);
+            if(is_array($API['body']))$API['body']=http_build_query($API['body']);
             curl_setopt($curl,CURLOPT_POST,1);
             curl_setopt($curl,CURLOPT_POSTFIELDS,$API['body']);
         }
         elseif($API['method']=='GET'){
-            if(!empty($API['body']))$API['url']=$API['url'].'?'.http_build_query($API['body']);
+            if(isset($API['body']))$API['url']=$API['url'].'?'.http_build_query($API['body']);
         }
         curl_setopt($curl,CURLOPT_HEADER,0);
         curl_setopt($curl,CURLOPT_TIMEOUT,20);
@@ -627,19 +627,22 @@ class Meting
                 break;
             case 'xiami':
                 $format=$this->_FORMAT;
-                $data=$this->format(false)->song($id)->format($format);
+                $data=$this->format(false)->song($id);
+                $this->format($format);
                 $url=json_decode($data,1)['data']['song']['logo'];
                 $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
                 break;
             case 'kugou':
                 $format=$this->_FORMAT;
-                $data=$this->format(false)->song($id)->format($format);
+                $data=$this->format(false)->song($id);
+                $this->format($format);
                 $url=json_decode($data,1)['imgUrl'];
                 $url=str_replace('{size}','400',$url);
                 break;
             case 'baidu':
                 $format=$this->_FORMAT;
-                $data=$this->format(false)->song($id)->format($format);
+                $data=$this->format(false)->song($id);
+                $this->format($format);
                 $data=json_decode($data,1);
                 $url=$data['songinfo']['pic_big']?:$data['songinfo']['pic_small'];
                 break;
@@ -873,8 +876,8 @@ class Meting
          if(!$this->_FORMAT)return $result;
          $result=json_decode($result,1);
          $data=array(
-             'lyric'  => @$result['lrc']['lyric']?:'',
-             'tlyric' => @$result['tlyric']['lyric']?:'',
+             'lyric'  => (@$result['lrc']['lyric'])?:'',
+             'tlyric' => (@$result['tlyric']['lyric'])?:'',
          );
          return json_encode($data);
      }
@@ -910,7 +913,7 @@ class Meting
         if(!$this->_FORMAT)return $result;
         $result=json_decode($result,1);
         $data=array(
-            'lyric' => @$result['lrcContent']?:'',
+            'lyric' => (@$result['lrcContent'])?:'',
         );
         return json_encode($data);
     }
@@ -936,7 +939,7 @@ class Meting
             'id'        => $data['id'],
             'name'      => $data['name'],
             'artist'    => array(),
-            'pic_id'    => @$data['al']['pic_str']?:$data['al']['pic'],
+            'pic_id'    => (@$data['al']['pic_str'])?:$data['al']['pic'],
             'url_id'    => $data['id'],
             'lyric_id'  => $data['id'],
             'source'    => 'netease',
@@ -966,7 +969,7 @@ class Meting
         $result=array(
             'id'       => $data['song_id'],
             'name'     => $data['song_name'],
-            'artist'   => explode(';',@$data['singers']?:$data['artist_name']),
+            'artist'   => explode(';',(@$data['singers'])?:$data['artist_name']),
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
@@ -977,7 +980,7 @@ class Meting
     private function format_kugou($data){
         $result=array(
             'id'       => $data['hash'],
-            'name'     => @$data['filename']?:$data['fileName'],
+            'name'     => (@$data['filename'])?:$data['fileName'],
             'artist'   => array(),
             'url_id'   => $data['hash'],
             'pic_id'   => $data['hash'],
