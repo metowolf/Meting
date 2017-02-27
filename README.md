@@ -1,6 +1,8 @@
-# Meting
-
 ![](http://ww2.sinaimg.cn/large/a15b4afegw1fbg1l7wn09j20fw05gq34)
+
+## Meting
+[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable)](https://packagist.org/packages/metowolf/Meting)
+[![License](https://poser.pugx.org/metowolf/Meting/license)](https://packagist.org/packages/metowolf/Meting)
 
  > :lollipop:Wow, such a powerful music API framework
 
@@ -8,25 +10,33 @@
 A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
- + **Light** - 32KB around with only one file.
- + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu and more.
+ + **Light** - 38KB around with only one file.
+ + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu, kuwo and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
+
+## Requirement
+PHP 5.3+ and openssl extension installed
 
 ## Get Started
 
 ### Install via composer
+Add Meting to composer.json configuration file.
 ```
 $ composer require metowolf/meting
+```
+And update the composer
+```
+$ composer update
 ```
 
 ### Install via require
 ```php
-// if you just download the Meting.php into directory, require it with the correct path.
-require_once 'Meting.php';
-```
+// If you installed via composer, just use this code to requrie autoloader on the top of your projects.
+require 'vendor/autoload.php';
 
-### Basic usage
-```php
+// Else use require file
+// require 'Meting.php';
+
 // Initialize to netease API
 $API = new Meting('netease');
 
@@ -34,16 +44,8 @@ $API = new Meting('netease');
 $data = $API->format(true)->search('Soldier');
 ```
 
-## Usage
+## More usage
 [wiki/docs](https://github.com/metowolf/Meting/wiki)
-
-## Demo
-```bash
-$ git clone https://github.com/metowolf/NeteaseCloudMusicApi.git
-$ cd Meting
-$ php -S 127.0.0.1:8080
-```
-then open http://127.0.0.1:8080/demo/simple-test in Browser
 
 ## Related Projects
  - [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
