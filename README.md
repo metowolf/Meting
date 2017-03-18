@@ -15,7 +15,7 @@ A powerful music API framework to accelerate development
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
 ## Requirement
-PHP 5.3+ and openssl extension installed
+PHP 5.3+ and Curl extension installed
 
 ## Get Started
 
