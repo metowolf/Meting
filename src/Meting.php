@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.2.0.1
+ * Version 1.3.1
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -15,610 +15,679 @@ class Meting
     protected $_RETRY = 3;
     protected $_FORMAT = false;
 
-    public function __construct($v='netease'){
+    public function __construct($v = 'netease')
+    {
         $this->site($v);
     }
 
-    public function site($v){
+    public function site($v)
+    {
         $this->_SITE=$v;
         return $this;
     }
 
-    public function format($v = true){
+    public function format($v = true)
+    {
         $this->_FORMAT=$v;
         return $this;
     }
 
-    private function curl($API){
-        if(isset($API['encode']))$API=call_user_func_array(array($this,$API['encode']),array($API));
+    private function curl($API)
+    {
+        if (isset($API['encode'])) {
+            $API=call_user_func_array(array($this,$API['encode']), array($API));
+        }
         $BASE=$this->curlset();
         $curl=curl_init();
-        if($API['method']=='POST'){
-            if(is_array($API['body']))$API['body']=http_build_query($API['body']);
-            curl_setopt($curl,CURLOPT_POST,1);
-            curl_setopt($curl,CURLOPT_POSTFIELDS,$API['body']);
+        if ($API['method']=='POST') {
+            if (is_array($API['body'])) {
+                $API['body']=http_build_query($API['body']);
+            }
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $API['body']);
+        } elseif ($API['method']=='GET') {
+            if (isset($API['body'])) {
+                $API['url']=$API['url'].'?'.http_build_query($API['body']);
+            }
         }
-        elseif($API['method']=='GET'){
-            if(isset($API['body']))$API['url']=$API['url'].'?'.http_build_query($API['body']);
-        }
-        curl_setopt($curl,CURLOPT_HEADER,0);
-        curl_setopt($curl,CURLOPT_TIMEOUT,20);
-        curl_setopt($curl,CURLOPT_ENCODING,'');
-        curl_setopt($curl,CURLOPT_IPRESOLVE,1);
-        curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,0);
-        curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,10);
-        curl_setopt($curl,CURLOPT_URL,$API['url']);
-        curl_setopt($curl,CURLOPT_COOKIE,$BASE['cookie']);
-        curl_setopt($curl,CURLOPT_REFERER,$BASE['referer']);
-        curl_setopt($curl,CURLOPT_USERAGENT,$BASE['useragent']);
-        for($i=0;$i<=$this->_RETRY;$i++){
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+        curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
+        curl_setopt($curl, CURLOPT_IPRESOLVE, 1);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_URL, $API['url']);
+        curl_setopt($curl, CURLOPT_COOKIE, $BASE['cookie']);
+        curl_setopt($curl, CURLOPT_REFERER, $BASE['referer']);
+        curl_setopt($curl, CURLOPT_USERAGENT, $BASE['useragent']);
+        for ($i=0;$i<=$this->_RETRY;$i++) {
             $data=curl_exec($curl);
             $info=curl_getinfo($curl);
             $error=curl_errno($curl);
             $status=$error?curl_error($curl):'';
-            if(!$error)break;
+            if (!$error) {
+                break;
+            }
         }
         curl_close($curl);
-        if($error)return json_encode(array(
+        if ($error) {
+            return json_encode(array(
             'error' => $error,
             'info'  => $info,
             'status' => $status,
         ));
-        if(isset($API['decode']))$data=call_user_func_array(array($this,$API['decode']),array($data));
-        if($this->_FORMAT&&isset($API['format'])){
-            $data=json_decode($data,1);
-            $data=$this->clean($data,$API['format']);
+        }
+        if (isset($API['decode'])) {
+            $data=call_user_func_array(array($this,$API['decode']), array($data));
+        }
+        if ($this->_FORMAT&&isset($API['format'])) {
+            $data=json_decode($data, 1);
+            $data=$this->clean($data, $API['format']);
             $data=json_encode($data);
         }
         return $data;
     }
 
-    private function pickup($array,$rule){
-        $t=explode('#',$rule);
-        foreach($t as $vo){
-            if(is_null($array))return null;
+    private function pickup($array, $rule)
+    {
+        $t=explode('#', $rule);
+        foreach ($t as $vo) {
+            if (is_null($array)) {
+                return null;
+            }
             $array=$array[$vo];
         }
         return $array;
     }
 
-    private function clean($raw,$rule){
-        if(!empty($rule))$raw=$this->pickup($raw,$rule);
-        if(is_null($raw))$raw=array();
-        elseif(!isset($raw[0]))$raw=array($raw);
-        $result=array_map(array($this,'format_'.$this->_SITE),$raw);
+    private function clean($raw, $rule)
+    {
+        if (!empty($rule)) {
+            $raw=$this->pickup($raw, $rule);
+        }
+        if (is_null($raw)) {
+            $raw=array();
+        } elseif (!isset($raw[0])) {
+            $raw=array($raw);
+        }
+        $result=array_map(array($this,'format_'.$this->_SITE), $raw);
         return $result;
     }
 
-    public function search($keyword,$page=1,$limit=30){
-        $API=array(
-            'netease' => array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
+    public function search($keyword, $page=1, $limit=30)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
                     'method' => 'POST',
-                    'params' => array(
-                        's'      => $keyword,
-                        'type'   => 1,
-                        'limit'  => $limit,
-                        'total'  => 'true',
-                        'offset' => $page-1,
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'POST',
+                        'params' => array(
+                            's'      => $keyword,
+                            'type'   => 1,
+                            'limit'  => $limit,
+                            'total'  => 'true',
+                            'offset' => $page-1,
+                        ),
+                        'url' => 'http://music.163.com/api/cloudsearch/pc',
                     ),
-                    'url' => 'http://music.163.com/api/cloudsearch/pc',
-                ),
-                'encode' => 'netease_AESECB',
-                'format' => 'result#songs',
-            ),
-            'tencent' => array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/soso/fcgi-bin/search_cp',
-                'body'   => array(
-                    'p'        => $page,
-                    'n'        => $limit,
-                    'w'        => $keyword,
-                    'aggr'     => 1,
-                    'lossless' => 1,
-                    'cr'       => 1,
-                ),
-                'decode' => 'jsonp2json',
-                'format' => 'data#song#list',
-            ),
-            'xiami' => array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'key'     => $keyword,
-                    'page'    => $page,
-                    'limit'   => $limit,
-                    'r'       => 'search/songs',
-                ),
-                'format' => 'data#songs',
-            ),
-            'kugou' => array(
-                'method' => 'GET',
-                'url'    => 'http://mobilecdn.kugou.com/api/v3/search/song',
-                'body'   => array(
-                    'iscorrect' => 1,
-                    'pagesize'  => $limit,
-                    'plat'      => 20,
-                    'sver'      => 3,
-                    'showtype'  => 14,
-                    'page'      => $page,
-                    'keyword'   => $keyword,
-                ),
-                'format' => 'data#info',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'    => 'baidu.ting.search.merge',
-                    'isNew'     => 1,
-                    'query'     => $keyword,
-                    'page_size' => $limit,
-                    'page_no'   => $page,
-                    'type'      => 0,
-                    'format'    => 'json',
-                    'from'      => 'ios',
-                    'channel'   => '(null)',
-                    'cuid'      => 'appstore',
-                    'from'      => 'ios',
-                    'version'   => '5.9.5',
-                ),
-                'format' => 'result#song_info#song_list',
-            ),
-            'kuwo' => array(
-                'method' => 'GET',
-                'url'    => 'http://player.kuwo.cn/webmusic/getsjplayinfo',
-                'body'   => array(
-                    'flag' => 6,
-                    'pn'   => 1,
-                    'pr'   => 50,
-                    'type' => 'music',
-                    'key'  => $keyword,
-                ),
-                'decode' => 'kuwo_json',
-                'format' => 'list',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
-    }
-
-    public function song($id){
-        $API=array(
-            'netease' => array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
-                    'method' => 'POST',
-                    'params' => array(
-                        'c' => '[{"id":'.$id.'}]',
-                    ),
-                    'url' => 'http://music.163.com/api/v3/song/detail',
-                ),
-                'encode' => 'netease_AESECB',
-                'format' => 'songs',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
-                'body'   => array(
-                    'songmid' => $id,
-                    'format'  => 'json',
-                ),
-                'decode' => 'tencent_singlesong',
-                'format' => 'data',
-            ),
-            'xiami'=>array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'id'      => $id,
-                    'r'       => 'song/detail',
-                ),
-                'format' => 'data#song',
-            ),
-            'kugou'=>array(
-                'method' => 'POST',
-                'url'    => 'http://m.kugou.com/app/i/getSongInfo.php?',
-                'body'   => array(
-                    "cmd"  => "playInfo",
-                    "hash" => $id,
-                    "from" => "mkugou",
-                ),
-                'format' => '',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'  => 'baidu.ting.song.play',
-                    'songid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.5',
-                ),
-                'format' => 'songinfo',
-            ),
-            'kuwo' => array(
-                'method' => 'GET',
-                'url'    => 'http://player.kuwo.cn/webmusic/st/getNewMuiseByRid',
-                'body'   => array(
-                    'rid' => $id,
-                ),
-                'decode' => 'kuwo_singlesong',
-                'format' => '',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
-    }
-
-    public function album($id){
-        $API=array(
-            'netease'=>array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
+                    'encode' => 'netease_AESECB',
+                    'format' => 'result#songs',
+                );
+                break;
+            case 'tencent':
+                $API=array(
                     'method' => 'GET',
-                    'params' => array(
-                        'id' => $id,
+                    'url'    => 'https://c.y.qq.com/soso/fcgi-bin/search_cp',
+                    'body'   => array(
+                        'p'        => $page,
+                        'n'        => $limit,
+                        'w'        => $keyword,
+                        'aggr'     => 1,
+                        'lossless' => 1,
+                        'cr'       => 1,
                     ),
-                    'url' => 'http://music.163.com/api/v1/album/'.$id,
-                ),
-                'encode' => 'netease_AESECB',
-                'format' => 'songs',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_info_cp.fcg',
-                'body'   => array(
-                    'albummid' => $id,
-                ),
-                'format' => 'data#list',
-            ),
-            'xiami'=>array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'id'      => $id,
-                    'r'       => 'album/detail',
-                ),
-                'format' => 'data#songs',
-            ),
-            'kugou'=>array(
-                'method' => 'GET',
-                'url'    => 'http://mobilecdn.kugou.com/api/v3/album/song',
-                'body'   => array(
-                    'albumid'  => $id,
-                    'plat'     => 2,
-                    'page'     => 1,
-                    'pagesize' => -1,
-                    'version'  => 8400,
-                ),
-                'format' => 'data#info',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'   => 'baidu.ting.album.getAlbumInfo',
-                    'album_id' => $id,
-                    'format'   => 'json',
-                    'from'     => 'ios',
-                    'channel'  => '(null)',
-                    'cuid'     => 'appstore',
-                    'from'     => 'ios',
-                    'version'  => '5.9.5',
-                ),
-                'format' => 'songlist',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
-    }
-
-    public function artist($id,$limit=50){
-        $API=array(
-            'netease'=>array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
+                    'decode' => 'jsonp2json',
+                    'format' => 'data#song#list',
+                );
+                break;
+            case 'xiami':
+                $API=array(
                     'method' => 'GET',
-                    'params' => array(
-                        'top' => $limit,
-                        "id"  => $id,
-                        "ext" => "true",
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'key'     => $keyword,
+                        'page'    => $page,
+                        'limit'   => $limit,
+                        'r'       => 'search/songs',
                     ),
-                    'url' => 'http://music.163.com/api/v1/artist/'.$id,
-                ),
-                'encode' => 'netease_AESECB',
-                'format' => 'hotSongs',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg',
-                'body'   => array(
-                    'singermid' => $id,
-                    'begin'     => 0,
-                    'num'       => $limit,
-                ),
-                'format' => 'data#list',
-            ),
-            'xiami' => array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'id'      => $id,
-                    'limit'   => $limit,
-                    'page'    => 1,
-                    'r'       => 'artist/hot-songs',
-                ),
-                'format' => 'data',
-            ),
-            'kugou'=>array(
-                'method' => 'GET',
-                'url'    => 'http://mobilecdn.kugou.com/api/v3/singer/song',
-                'body'   => array(
-                    'singerid' => $id,
-                    'page'     => 1,
-                    'plat'     => 0,
-                    'pagesize' => $limit,
-                    'version'  => 8400,
-                ),
-                'format' => 'data#info',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'  => 'baidu.ting.artist.getSongList',
-                    'tinguid' => $id,
-                    'limits'  => $limit,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.5',
-                ),
-                'format' => 'songlist',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
+                    'format' => 'data#songs',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://mobilecdn.kugou.com/api/v3/search/song',
+                    'body'   => array(
+                        'iscorrect' => 1,
+                        'pagesize'  => $limit,
+                        'plat'      => 20,
+                        'sver'      => 3,
+                        'showtype'  => 14,
+                        'page'      => $page,
+                        'keyword'   => $keyword,
+                    ),
+                    'format' => 'data#info',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'    => 'baidu.ting.search.merge',
+                        'isNew'     => 1,
+                        'query'     => $keyword,
+                        'page_size' => $limit,
+                        'page_no'   => $page,
+                        'type'      => 0,
+                        'format'    => 'json',
+                        'from'      => 'ios',
+                        'channel'   => '(null)',
+                        'cuid'      => 'appstore',
+                        'from'      => 'ios',
+                        'version'   => '5.9.5',
+                    ),
+                    'format' => 'result#song_info#song_list',
+                );
+                break;
+        }
+        return $this->curl($API);
     }
 
-    public function playlist($id){
-        $API=array(
-            'netease'=>array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
+    public function song($id)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
                     'method' => 'POST',
-                    'params' => array(
-                        'id' => $id,
-                        "n"  => 1000,
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'POST',
+                        'params' => array(
+                            'c' => '[{"id":'.$id.'}]',
+                        ),
+                        'url' => 'http://music.163.com/api/v3/song/detail',
                     ),
-                    'url' => 'http://music.163.com/api/v3/playlist/detail',
-                ),
-                'encode' => 'netease_AESECB',
-                'format' => 'playlist#tracks',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
-                'body'   => array(
-                    'disstid' => $id,
-                    'utf8'    => 1,
-                    'type'    => 1,
-                ),
-                'decode' => 'jsonp2json',
-                'format' => 'cdlist#0#songlist',
-            ),
-            'xiami'=>array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'id'      => $id,
-                    'r'       => 'collect/detail',
-                ),
-                'format' => 'data#songs',
-            ),
-            'kugou'=>array(
-                'method' => 'GET',
-                'url'    => 'http://mobilecdn.kugou.com/api/v3/special/song',
-                'body'   => array(
-                    'specialid' => $id,
-                    'page'      => 1,
-                    'plat'      => 2,
-                    'pagesize'  => -1,
-                    'version'   => 8400,
-                ),
-                'format' => 'data#info',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'  => 'baidu.ting.diy.gedanInfo',
-                    'listid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.5',
-                ),
-                'format' => 'content',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
-    }
-
-    public function url($id,$br=320){
-        $API=array(
-            'netease'=>array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
+                    'encode' => 'netease_AESECB',
+                    'format' => 'songs',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
+                    'body'   => array(
+                        'songmid' => $id,
+                        'format'  => 'json',
+                    ),
+                    'decode' => 'tencent_singlesong',
+                    'format' => 'data',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'r'       => 'song/detail',
+                    ),
+                    'format' => 'data#song',
+                );
+                break;
+            case 'kugou':
+                $API=array(
                     'method' => 'POST',
-                    'params' => array(
-                        'ids' => array($id),
-                        'br'  => $br*1000,
-                    ),
-                    'url' => 'http://music.163.com/api/song/enhance/player/url',
-                ),
-                'encode' => 'netease_AESECB',
-                'decode' => 'netease_url',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
-                'body'   => array(
-                    'songmid' => $id,
-                    'format'  => 'json',
-                ),
-                'decode' => 'tencent_url',
-            ),
-            'xiami'=>array(
-                'method' => 'GET',
-                'url'    => 'http://www.xiami.com/song/playlist/id/'.$id.'/object_name/default/object_id/0/cat/json',
-                'body'   => array(),
-                'decode' => 'xiami_url',
-            ),
-            'kugou'=>array(
-                'method' => 'POST',
-                'url'    => 'http://media.store.kugou.com/v1/get_res_privilege',
-                'body'   => json_encode(array(
-                    "relate"    => 1,
-                    "userid"    => 0,
-                    "vip"       => 0,
-                    "appid"     => 1005,
-                    "token"     => "",
-                    "behavior"  => "download",
-                    "clientver" => "8493",
-                    "resource"  => array(array(
-                        "id"   => 0,
-                        "type" => "audio",
+                    'url'    => 'http://m.kugou.com/app/i/getSongInfo.php?',
+                    'body'   => array(
+                        "cmd"  => "playInfo",
                         "hash" => $id,
-                    )))
-                ),
-                'decode' => 'kugou_url',
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://music.baidu.com/data/music/fmlink',
-                'body'   => array(
-                    'songIds' => $id,
-                    'rate'    => $br,
-                    'type'    => 'mp3',
-                ),
-                'decode' => 'baidu_url',
-            ),
-            'kuwo' => array(
-                'method' => 'GET',
-                'url'    => 'http://antiserver.kuwo.cn/anti.s',
-                'body'   => array(
-                    'response' => 'url',
-                    'format'   => 'mp3|wav|aac',
-                    'type'     => 'convert_url',
-                    'rid'      => $id,
-                ),
-                'decode' => 'kuwo_url',
-            ),
-        );
-        $this->_temp['br']=$br;
-        return $this->curl($API[$this->_SITE]);
-    }
-
-    public function lyric($id){
-        $API=array(
-            'netease'=>array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/linux/forward',
-                'body'   => array(
-                    'method' => 'POST',
-                    'params' => array(
-                        'id' => $id,
-                        'os' => 'linux',
-                        'lv' => -1,
-                        'kv' => -1,
-                        'tv' => -1,
+                        "from" => "mkugou",
                     ),
-                    'url' => 'http://music.163.com/api/song/lyric',
-                ),
-                'encode' => 'netease_AESECB',
-                'decode' => 'netease_lyric',
-            ),
-            'tencent'=>array(
-                'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
-                'body'   => array(
-                    'songmid'  => $id,
-                    'g_tk'     => 5381,
-                ),
-                'decode' => 'tencent_lyric',
-            ),
-            'xiami'=>array(
-                'method' => 'GET',
-                'url'    => 'http://api.xiami.com/web',
-                'body'   => array(
-                    'v'       => '2.0',
-                    'app_key' => '1',
-                    'id'      => $id,
-                    'r'       => 'song/detail',
-                ),
-                'decode' => 'xiami_lyric',
-            ),
-            'kugou'=>array(
-                'method' => 'GET',
-                'url'    => 'http://m.kugou.com/app/i/krc.php',
-                'body'   => array(
-                    'keyword'    => '%20-%20',
-                    'timelength' => 1000000,
-                    'cmd'        => 100,
-                    'hash'       => $id,
-                ),
-                'decode' => 'kugou_lyric'
-            ),
-            'baidu' => array(
-                'method' => 'GET',
-                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
-                'body'   => array(
-                    'method'  => 'baidu.ting.song.lry',
-                    'songid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.5',
-                ),
-                'decode' => 'baidu_lyric'
-            ),
-            'kuwo' => array(
-                'method' => 'GET',
-                'url'    => 'http://newlyric.kuwo.cn/newlyric.lrc?'.base64_encode($this->kuwo_xor("user=12345,web,web,web&requester=localhost&req=1&rid={$id}&lrcx=1")),
-                'decode' => 'kuwo_lyric',
-            ),
-        );
-        return $this->curl($API[$this->_SITE]);
+                    'format' => '',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'  => 'baidu.ting.song.play',
+                        'songid'  => $id,
+                        'format'  => 'json',
+                        'from'    => 'ios',
+                        'channel' => '(null)',
+                        'cuid'    => 'appstore',
+                        'from'    => 'ios',
+                        'version' => '5.9.5',
+                    ),
+                    'format' => 'songinfo',
+                );
+                break;
+        }
+        return $this->curl($API);
     }
 
-    public function pic($id,$size=300){
-        switch($this->_SITE){
+    public function album($id)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'GET',
+                        'params' => array(
+                            'id' => $id,
+                        ),
+                        'url' => 'http://music.163.com/api/v1/album/'.$id,
+                    ),
+                    'encode' => 'netease_AESECB',
+                    'format' => 'songs',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_info_cp.fcg',
+                    'body'   => array(
+                        'albummid' => $id,
+                    ),
+                    'format' => 'data#list',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'r'       => 'album/detail',
+                    ),
+                    'format' => 'data#songs',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://mobilecdn.kugou.com/api/v3/album/song',
+                    'body'   => array(
+                        'albumid'  => $id,
+                        'plat'     => 2,
+                        'page'     => 1,
+                        'pagesize' => -1,
+                        'version'  => 8400,
+                    ),
+                    'format' => 'data#info',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'   => 'baidu.ting.album.getAlbumInfo',
+                        'album_id' => $id,
+                        'format'   => 'json',
+                        'from'     => 'ios',
+                        'channel'  => '(null)',
+                        'cuid'     => 'appstore',
+                        'from'     => 'ios',
+                        'version'  => '5.9.5',
+                    ),
+                    'format' => 'songlist',
+                );
+                break;
+        }
+        return $this->curl($API);
+    }
+
+    public function artist($id, $limit=50)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'GET',
+                        'params' => array(
+                            'top' => $limit,
+                            "id"  => $id,
+                            "ext" => "true",
+                        ),
+                        'url' => 'http://music.163.com/api/v1/artist/'.$id,
+                    ),
+                    'encode' => 'netease_AESECB',
+                    'format' => 'hotSongs',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg',
+                    'body'   => array(
+                        'singermid' => $id,
+                        'begin'     => 0,
+                        'num'       => $limit,
+                    ),
+                    'format' => 'data#list',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'limit'   => $limit,
+                        'page'    => 1,
+                        'r'       => 'artist/hot-songs',
+                    ),
+                    'format' => 'data',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://mobilecdn.kugou.com/api/v3/singer/song',
+                    'body'   => array(
+                        'singerid' => $id,
+                        'page'     => 1,
+                        'plat'     => 0,
+                        'pagesize' => $limit,
+                        'version'  => 8400,
+                    ),
+                    'format' => 'data#info',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'  => 'baidu.ting.artist.getSongList',
+                        'tinguid' => $id,
+                        'limits'  => $limit,
+                        'format'  => 'json',
+                        'from'    => 'ios',
+                        'channel' => '(null)',
+                        'cuid'    => 'appstore',
+                        'from'    => 'ios',
+                        'version' => '5.9.5',
+                    ),
+                    'format' => 'songlist',
+                );
+                break;
+        }
+        return $this->curl($API);
+    }
+
+    public function playlist($id)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'POST',
+                        'params' => array(
+                            'id' => $id,
+                            "n"  => 1000,
+                        ),
+                        'url' => 'http://music.163.com/api/v3/playlist/detail',
+                    ),
+                    'encode' => 'netease_AESECB',
+                    'format' => 'playlist#tracks',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+                    'body'   => array(
+                        'disstid' => $id,
+                        'utf8'    => 1,
+                        'type'    => 1,
+                    ),
+                    'decode' => 'jsonp2json',
+                    'format' => 'cdlist#0#songlist',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'r'       => 'collect/detail',
+                    ),
+                    'format' => 'data#songs',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://mobilecdn.kugou.com/api/v3/special/song',
+                    'body'   => array(
+                        'specialid' => $id,
+                        'page'      => 1,
+                        'plat'      => 2,
+                        'pagesize'  => -1,
+                        'version'   => 8400,
+                    ),
+                    'format' => 'data#info',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'  => 'baidu.ting.diy.gedanInfo',
+                        'listid'  => $id,
+                        'format'  => 'json',
+                        'from'    => 'ios',
+                        'channel' => '(null)',
+                        'cuid'    => 'appstore',
+                        'from'    => 'ios',
+                        'version' => '5.9.5',
+                    ),
+                    'format' => 'content',
+                );
+                break;
+        }
+        return $this->curl($API);
+    }
+
+    public function url($id, $br=320)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'POST',
+                        'params' => array(
+                            'ids' => array($id),
+                            'br'  => $br*1000,
+                        ),
+                        'url' => 'http://music.163.com/api/song/enhance/player/url',
+                    ),
+                    'encode' => 'netease_AESECB',
+                    'decode' => 'netease_url',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
+                    'body'   => array(
+                        'songmid' => $id,
+                        'format'  => 'json',
+                    ),
+                    'decode' => 'tencent_url',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'r'       => 'song/detail',
+                    ),
+                    'decode' => 'xiami_url',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://media.store.kugou.com/v1/get_res_privilege',
+                    'body'   => json_encode(array(
+                        "relate"    => 1,
+                        "userid"    => 0,
+                        "vip"       => 0,
+                        "appid"     => 1005,
+                        "token"     => "",
+                        "behavior"  => "download",
+                        "clientver" => "8493",
+                        "resource"  => array(array(
+                            "id"   => 0,
+                            "type" => "audio",
+                            "hash" => $id,
+                        )))
+                    ),
+                    'decode' => 'kugou_url',
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://music.baidu.com/data/music/fmlink',
+                    'body'   => array(
+                        'songIds' => $id,
+                        'rate'    => $br,
+                        'type'    => 'mp3',
+                    ),
+                    'decode' => 'baidu_url',
+                );
+                break;
+        }
+        $this->_temp['br']=$br;
+        return $this->curl($API);
+    }
+
+    public function lyric($id)
+    {
+        switch ($this->_SITE) {
+            case 'netease':
+                $API=array(
+                    'method' => 'POST',
+                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'body'   => array(
+                        'method' => 'POST',
+                        'params' => array(
+                            'id' => $id,
+                            'os' => 'linux',
+                            'lv' => -1,
+                            'kv' => -1,
+                            'tv' => -1,
+                        ),
+                        'url' => 'http://music.163.com/api/song/lyric',
+                    ),
+                    'encode' => 'netease_AESECB',
+                    'decode' => 'netease_lyric',
+                );
+                break;
+            case 'tencent':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+                    'body'   => array(
+                        'songmid'  => $id,
+                        'g_tk'     => 5381,
+                    ),
+                    'decode' => 'tencent_lyric',
+                );
+                break;
+            case 'xiami':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://api.xiami.com/web',
+                    'body'   => array(
+                        'v'       => '2.0',
+                        'app_key' => '1',
+                        'id'      => $id,
+                        'r'       => 'song/detail',
+                    ),
+                    'decode' => 'xiami_lyric',
+                );
+                break;
+            case 'kugou':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://m.kugou.com/app/i/krc.php',
+                    'body'   => array(
+                        'keyword'    => '%20-%20',
+                        'timelength' => 1000000,
+                        'cmd'        => 100,
+                        'hash'       => $id,
+                    ),
+                    'decode' => 'kugou_lyric'
+                );
+                break;
+            case 'baidu':
+                $API=array(
+                    'method' => 'GET',
+                    'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
+                    'body'   => array(
+                        'method'  => 'baidu.ting.song.lry',
+                        'songid'  => $id,
+                        'format'  => 'json',
+                        'from'    => 'ios',
+                        'channel' => '(null)',
+                        'cuid'    => 'appstore',
+                        'from'    => 'ios',
+                        'version' => '5.9.5',
+                    ),
+                    'decode' => 'baidu_lyric'
+                );
+                break;
+        }
+        return $this->curl($API);
+    }
+
+    public function pic($id, $size=300)
+    {
+        switch ($this->_SITE) {
             case 'netease':
                 $url='https://p3.music.126.net/'.$this->netease_pickey($id).'/'.$id.'.jpg?param='.$size.'z'.$size.'&quality=100';
                 break;
@@ -629,37 +698,32 @@ class Meting
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data,1)['data']['song']['logo'];
-                $url=str_replace(['_1.','http:','img.'],['.','https:','pic.'],$url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
+                $url=json_decode($data, 1)['data']['song']['logo'];
+                $url=str_replace(['_1.','http:','img.'], ['.','https:','pic.'], $url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
                 break;
             case 'kugou':
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data,1)['imgUrl'];
-                $url=str_replace('{size}','400',$url);
+                $url=json_decode($data, 1)['imgUrl'];
+                $url=str_replace('{size}', '400', $url);
                 break;
             case 'baidu':
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $data=json_decode($data,1);
+                $data=json_decode($data, 1);
                 $url=$data['songinfo']['pic_big']?:$data['songinfo']['pic_small'];
-                break;
-            case 'kuwo':
-                $API=array('method'=>'GET','url'=>'http://www.kuwo.cn/webmusic/sj/dtflagdate','body'=>array('flag'=>6,'rid'=>$id));
-                $data=$this->curl($API);
-                $data=explode(',',$data);
-                $url=end(str_replace('http:','https:',$data));
                 break;
         }
         return json_encode(array('url'=>$url));
     }
 
-    private function curlset(){
+    private function curlset()
+    {
         $BASE=array(
             'netease'=>array(
-                'referer'   => 'http://music.163.com/',
+                'referer'   => 'https://music.163.com/',
                 'cookie'    => 'os=linux; appver=1.0.0.1026; osver=Ubuntu%2016.10; MUSIC_U=78d411095f4b022667bc8ec49e9a44cca088df057d987f5feaf066d37458e41c4a7d9447977352cf27ea9fee03f6ec4441049cea1c6bb9b6; __remember_me=true',
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
@@ -683,11 +747,6 @@ class Meting
                 'cookie'    => 'BAIDUID=123456789',
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
-            'kuwo'=>array(
-                'referer'   => 'http://www.kuwo.cn/',
-                'cookie'    => '',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            ),
         );
         return $BASE[$this->_SITE];
     }
@@ -696,15 +755,15 @@ class Meting
      * 乱七八糟的函数，加密解密...
      * 正在努力重构这些代码 TAT
      */
-    private function netease_AESECB($API){
+    private function netease_AESECB($API)
+    {
         $KEY='7246674226682325323F5E6544673A51';
         $body=json_encode($API['body']);
-        if(function_exists('openssl_encrypt')){
-            $body=openssl_encrypt($body,'aes-128-ecb',hex2bin($KEY));
-        }
-        else{
+        if (function_exists('openssl_encrypt')) {
+            $body=openssl_encrypt($body, 'aes-128-ecb', hex2bin($KEY));
+        } else {
             $PAD=16-(strlen($body)%16);
-            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128,hex2bin($KEY),$body.str_repeat(chr($PAD),$PAD),MCRYPT_MODE_ECB));
+            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hex2bin($KEY), $body.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_ECB));
         }
         $body=strtoupper(bin2hex(base64_decode($body)));
 
@@ -713,71 +772,54 @@ class Meting
         );
         return $API;
     }
-    private function jsonp2json($jsonp){
-        if($jsonp[0] !== '[' && $jsonp[0] !== '{') {
+    private function jsonp2json($jsonp)
+    {
+        if ($jsonp[0] !== '[' && $jsonp[0] !== '{') {
             $jsonp = substr($jsonp, strpos($jsonp, '('));
         }
-        return trim($jsonp,'();');
+        return trim($jsonp, '();');
     }
-    private function kuwo_json($json){
-        return str_replace("'",'"',$json);
-    }
-    private function tencent_singlesong($result){
-        $result=json_decode($result,1);
+    private function tencent_singlesong($result)
+    {
+        $result=json_decode($result, 1);
         $data=$result['data'][0];
         $t=array(
             'songmid' => $data['mid'],
             'songname' => $data['name'],
             'albummid' => $data['album']['mid'],
         );
-        foreach($t as $key=>$vo)$result['data'][0][$key]=$vo;
+        foreach ($t as $key=>$vo) {
+            $result['data'][0][$key]=$vo;
+        }
         return json_encode($result);
     }
-    private function kuwo_singlesong($result){
-        preg_match_all('/<([\w]+)>(.*?)<\/\\1>/i',$result,$matches);
-        for($i=0;$i<count($matches[0]);$i++)$data[$matches[1][$i]]=$matches[2][$i];
-        $data['rid']='MUSIC_'.$data['music_id'];
-        $data['songName']=$data['name'];
-        return json_encode($data);
-    }
-    private function kuwo_xor($str,$key="yeelion"){
-        $key=unpack("C*", $key);
-        $str=unpack("C*", $str);
-        $str_len=count($str);
-        $key_len=count($key);
-        $output=array();
-        $i=1;
-        while($i<=$str_len){
-            $j=1;
-            while($j<=$key_len&&$i<=$str_len){
-                $output[]=pack("C*",$str[$i++]^$key[$j++]);
-            }
-        }
-        return implode("", $output);
-    }
-
-    private function netease_pickey($id){
+    private function netease_pickey($id)
+    {
         $magic=str_split('3go8&$8*3*3h0k(2)2');
         $song_id=str_split($id);
-        for($i=0;$i<count($song_id);$i++)$song_id[$i]=chr(ord($song_id[$i])^ord($magic[$i%count($magic)]));
-        $result=base64_encode(md5(implode('',$song_id),1));
-        $result=str_replace(['/','+'],['_','-'],$result);
+        for ($i=0;$i<count($song_id);$i++) {
+            $song_id[$i]=chr(ord($song_id[$i])^ord($magic[$i%count($magic)]));
+        }
+        $result=base64_encode(md5(implode('', $song_id), 1));
+        $result=str_replace(['/','+'], ['_','-'], $result);
         return $result;
     }
     /**
      * URL - 歌曲地址转换函数
      * 用于返回不高于指定 bitRate 的歌曲地址（默认规范化）
      */
-    private function netease_url($result){
-        $data=json_decode($result,1);
+    private function netease_url($result)
+    {
+        $data=json_decode($result, 1);
         $url=array(
-            'url' => str_replace('http:','https:',$data['data'][0]['url']),
+            'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
             'br'  => $data['data'][0]['br']/1000,
         );
         return json_encode($url);
     }
-    private function tencent_url($result){
-        $data=json_decode($result,1);
+    private function tencent_url($result)
+    {
+        $data=json_decode($result, 1);
         $GUID=mt_rand()%10000000000;
         $API=array(
             'method' => 'GET',
@@ -788,7 +830,7 @@ class Meting
             ),
             'decode' => 'jsonp2json',
         );
-        $KEY=json_decode($this->curl($API),1)['key'];
+        $KEY=json_decode($this->curl($API), 1)['key'];
 
         $type=array(
             'size_320mp3'=>array(320,'M800','mp3'),
@@ -796,8 +838,8 @@ class Meting
             'size_96aac'=>array(96,'C400','m4a'),
             'size_48aac'=>array(48,'C200','m4a'),
         );
-        foreach($type as $key=>$vo){
-            if($data['data'][0]['file'][$key]&&$vo[0]<=$this->_temp['br']){
+        foreach ($type as $key=>$vo) {
+            if ($data['data'][0]['file'][$key]&&$vo[0]<=$this->_temp['br']) {
                 $url=array(
                     'url' => 'http://dl.stream.qqmusic.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2].'?vkey='.$KEY.'&guid='.$GUID.'&uid=0&fromtag=30',
                     'br'  => $vo[0],
@@ -807,27 +849,23 @@ class Meting
         }
         return json_encode($url);
     }
-    private function xiami_url($result){
-        $data=json_decode($result,1);
-        $max=0;
-        foreach($data['data']['trackList'][0]['allAudios'] as $vo){
-            if($vo['rate']<=$this->_temp['br']&&$vo['rate']>$max){
-                $max=$vo['rate'];
-                $url=array(
-                    'url' => str_replace('http:','https:',$vo['filePath']),
-                    'br'  => $vo['rate'],
-                );
-            }
-        }
+    private function xiami_url($result)
+    {
+        $data=json_decode($result, 1);
+        $url=array(
+            'url' => str_replace('http:', 'https:', $data['data']['song']['listen_file']),
+            'br'  => 128,
+        );
         return json_encode($url);
     }
-    private function kugou_url($result){
-        $data=json_decode($result,1);
+    private function kugou_url($result)
+    {
+        $data=json_decode($result, 1);
 
         $max=0;
         $url=array();
-        foreach($data['data'][0]['relate_goods'] as $vo){
-            if($vo['info']['bitrate']<=$this->_temp['br']&&$vo['info']['bitrate']>$max){
+        foreach ($data['data'][0]['relate_goods'] as $vo) {
+            if ($vo['info']['bitrate']<=$this->_temp['br']&&$vo['info']['bitrate']>$max) {
                 $API=array(
                     'method' => 'GET',
                     'url'    => 'http://trackercdn.kugou.com/i/v2/',
@@ -840,8 +878,8 @@ class Meting
                         'version'  => 8400,
                     ),
                 );
-                $t=json_decode($this->curl($API),1);
-                if(isset($t['url'])){
+                $t=json_decode($this->curl($API), 1);
+                if (isset($t['url'])) {
                     $max=$t['bitRate']/1000;
                     $url=array(
                         'url' => $t['url'],
@@ -852,89 +890,86 @@ class Meting
         }
         return json_encode($url);
     }
-    private function baidu_url($result){
-        $data=json_decode($result,1);
+    private function baidu_url($result)
+    {
+        $data=json_decode($result, 1);
         $url=array(
             'url' => $data['data']['songList'][0]['songLink'],
             'br'  => $data['data']['songList'][0]['rate'],
         );
-        $url['url']=str_replace('http://yinyueshiting.baidu.com','https://gss0.bdstatic.com/y0s1hSulBw92lNKgpU_Z2jR7b2w6buu',$url['url']);
-        return json_encode($url);
-    }
-    private function kuwo_url($result){
-        $url=array(
-            'url' => $result,
-            'br'  => 192,
-        );
+        $url['url']=str_replace('http://yinyueshiting.baidu.com', 'https://gss0.bdstatic.com/y0s1hSulBw92lNKgpU_Z2jR7b2w6buu', $url['url']);
         return json_encode($url);
     }
     /**
      * 歌词处理模块
      * 用于规范化歌词输出
      */
-     private function netease_lyric($result){
-         if(!$this->_FORMAT)return $result;
-         $result=json_decode($result,1);
+     private function netease_lyric($result)
+     {
+         if (!$this->_FORMAT) {
+             return $result;
+         }
+         $result=json_decode($result, 1);
          $data=array(
              'lyric'  => (@$result['lrc']['lyric'])?:'',
              'tlyric' => (@$result['tlyric']['lyric'])?:'',
          );
          return json_encode($data);
      }
-     private function tencent_lyric($result){
-         $result=$this->jsonp2json($result);
-         if(!$this->_FORMAT)return $result;
-         $result=json_decode($result,1);
-         $data=array(
+    private function tencent_lyric($result)
+    {
+        $result=$this->jsonp2json($result);
+        if (!$this->_FORMAT) {
+            return $result;
+        }
+        $result=json_decode($result, 1);
+        $data=array(
              'lyric'  => isset($result['lyric'])?base64_decode($result['lyric']):'',
              'tlyric' => isset($result['trans'])?base64_decode($result['trans']):'',
          );
-         return json_encode($data);
-     }
-    private function xiami_lyric($result){
-        if(!$this->_FORMAT)return $result;
-        $result=json_decode($result,1);
+        return json_encode($data);
+    }
+    private function xiami_lyric($result)
+    {
+        if (!$this->_FORMAT) {
+            return $result;
+        }
+        $result=json_decode($result, 1);
         $API=array('method'=>'GET','url'=>$result['data']['song']['lyric']);
         $data=$this->curl($API);
-        $data=preg_replace('/<[^>]+>/','',$data);
+        $data=preg_replace('/<[^>]+>/', '', $data);
         $arr=array(
             'lyric' => $data,
         );
         return json_encode($arr);
     }
-    private function kugou_lyric($result){
-        if(!$this->_FORMAT)return $result;
+    private function kugou_lyric($result)
+    {
+        if (!$this->_FORMAT) {
+            return $result;
+        }
         $arr=array(
             'lyric' => $result,
         );
         return json_encode($arr);
     }
-    private function baidu_lyric($result){
-        if(!$this->_FORMAT)return $result;
-        $result=json_decode($result,1);
+    private function baidu_lyric($result)
+    {
+        if (!$this->_FORMAT) {
+            return $result;
+        }
+        $result=json_decode($result, 1);
         $data=array(
             'lyric' => (@$result['lrcContent'])?:'',
         );
         return json_encode($data);
     }
-    private function kuwo_lyric($result){
-        if(!$this->_FORMAT)return $result;
-        $str=substr($result,strpos($result,"\r\n\r\n")+4);
-        $str=zlib_decode($str);
-        $str=base64_decode($str);
-        $str=$this->kuwo_xor($str);
-        $str=iconv('gb18030',"UTF-8//IGNORE",$str);
-        $str=preg_replace('/<[^>]+>/','',$str);
-        $arr=array(
-            'lyric' => $str,
-        );
-        return json_encode($arr);
-    }
     /**
      * Format - 规范化函数
      * 用于统一返回的参数，可用 ->format() 一次性开关开启
      */
-    private function format_netease($data){
+    private function format_netease($data)
+    {
         $result=array(
             'id'        => $data['id'],
             'name'      => $data['name'],
@@ -944,15 +979,20 @@ class Meting
             'lyric_id'  => $data['id'],
             'source'    => 'netease',
         );
-        if(isset($data['al']['picUrl'])){
-            preg_match('/\/(\d+)\./',$data['al']['picUrl'],$match);
+        if (isset($data['al']['picUrl'])) {
+            preg_match('/\/(\d+)\./', $data['al']['picUrl'], $match);
             $result['pic_id']=$match[1];
         }
-        foreach($data['ar'] as $vo)$result['artist'][]=$vo['name'];
+        foreach ($data['ar'] as $vo) {
+            $result['artist'][]=$vo['name'];
+        }
         return $result;
     }
-    private function format_tencent($data){
-        if(isset($data['musicData']))$data=$data['musicData'];
+    private function format_tencent($data)
+    {
+        if (isset($data['musicData'])) {
+            $data=$data['musicData'];
+        }
         $result=array(
             'id'        => $data['songmid'],
             'name'      => $data['songname'],
@@ -962,14 +1002,17 @@ class Meting
             'lyric_id'  => $data['songmid'],
             'source'    => 'tencent',
         );
-        foreach($data['singer'] as $vo)$result['artist'][]=$vo['name'];
+        foreach ($data['singer'] as $vo) {
+            $result['artist'][]=$vo['name'];
+        }
         return $result;
     }
-    private function format_xiami($data){
+    private function format_xiami($data)
+    {
         $result=array(
             'id'       => $data['song_id'],
             'name'     => $data['song_name'],
-            'artist'   => explode(';',(@$data['singers'])?:$data['artist_name']),
+            'artist'   => explode(';', (@$data['singers'])?:$data['artist_name']),
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
@@ -977,7 +1020,8 @@ class Meting
         );
         return $result;
     }
-    private function format_kugou($data){
+    private function format_kugou($data)
+    {
         $result=array(
             'id'       => $data['hash'],
             'name'     => (@$data['filename'])?:$data['fileName'],
@@ -987,31 +1031,20 @@ class Meting
             'lyric_id' => $data['hash'],
             'source'   => 'kugou',
         );
-        list($result['artist'],$result['name'])=explode(' - ',$result['name'],2);
-        $result['artist']=explode('、',$result['artist']);
+        list($result['artist'], $result['name'])=explode(' - ', $result['name'], 2);
+        $result['artist']=explode('、', $result['artist']);
         return $result;
     }
-    private function format_baidu($data){
+    private function format_baidu($data)
+    {
         $result=array(
             'id'       => $data['song_id'],
             'name'     => $data['title'],
-            'artist'   => explode(',',$data['author']),
+            'artist'   => explode(',', $data['author']),
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
             'source'   => 'baidu',
-        );
-        return $result;
-    }
-    private function format_kuwo($data){
-        $result=array(
-            'id'       => $data['rid'],
-            'name'     => $data['songName'],
-            'artist'   => explode('&',$data['artist']),
-            'pic_id'   => $data['rid'],
-            'url_id'   => $data['rid'],
-            'lyric_id' => $data['rid'],
-            'source'   => 'kuwo',
         );
         return $result;
     }
