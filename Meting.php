@@ -78,7 +78,7 @@ class Meting
             'status' => $status,
         ));
         }
-        if (isset($API['decode'])) {
+        if ($this->_FORMAT&&isset($API['decode'])) {
             $data=call_user_func_array(array($this,$API['decode']), array($data));
         }
         if ($this->_FORMAT&&isset($API['format'])) {
@@ -811,10 +811,18 @@ class Meting
     private function netease_url($result)
     {
         $data=json_decode($result, 1);
-        $url=array(
-            'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
-            'br'  => $data['data'][0]['br']/1000,
+        if($data['data'][0]['uf'] != null){
+          $url=array(
+            'url' => str_replace('http:', 'https:', $data['data'][0]['uf']['url']),
+            'br'  =>$data['data'][0]['uf']['type'],
         );
+        }
+        else{
+          $url=array(
+              'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
+              'br'  => $data['data'][0]['br']/1000,
+          );
+        }
         return json_encode($url);
     }
     private function tencent_url($result)
@@ -978,6 +986,8 @@ class Meting
             'url_id'    => $data['id'],
             'lyric_id'  => $data['id'],
             'source'    => 'netease',
+            'maxbr'     =>  $data['privilege']['maxbr'],
+            'al_name'   =>    $data['al']['name'],
         );
         if (isset($data['al']['picUrl'])) {
             preg_match('/\/(\d+)\./', $data['al']['picUrl'], $match);
