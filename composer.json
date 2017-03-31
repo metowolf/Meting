@@ -18,6 +18,8 @@
         "ext-curl": "*"
 	},
 	"autoload": {
-        "files": ["Meting.php"]
+        "psr-4": {
+			"Meting" : "src/"
+		}
 	}
 }

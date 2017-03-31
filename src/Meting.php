@@ -7,7 +7,7 @@
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
  */
-
+namespace Meting;
 class Meting
 {
     protected $_SITE;
