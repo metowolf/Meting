@@ -19,7 +19,7 @@
 	},
 	"autoload": {
         "psr-4": {
-			"Meting" : "src/"
+			"Metowolf" : "src/"
 		}
 	}
 }
