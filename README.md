@@ -34,14 +34,21 @@ $ composer update
 // If you installed via composer, just use this code to requrie autoloader on the top of your projects.
 require 'vendor/autoload.php';
 
-// Else use require file
+// Or require file
 // require 'Meting.php';
+
+// Using Metowolf namespace
+use Metowolf\Meting;
 
 // Initialize to netease API
 $API = new Meting('netease');
 
-// Enjoy
+// Get data
 $data = $API->format(true)->search('Soldier');
+
+// Enjoy
+echo $data;
+
 ```
 
 ## More usage
