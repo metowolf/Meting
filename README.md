@@ -1,59 +1,69 @@
-![](http://ww2.sinaimg.cn/large/a15b4afegw1fbg1l7wn09j20fw05gq34)
 
-## Meting
-[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable)](https://packagist.org/packages/metowolf/Meting)
-[![License](https://poser.pugx.org/metowolf/Meting/license)](https://packagist.org/packages/metowolf/Meting)
+##改动说明
++ 扩展封装
++ 修复网易云音乐的ape解析
 
- > :lollipop:Wow, such a powerful music API framework
+## 以下为原版介绍
 
-## Introduction
-A powerful music API framework to accelerate development
 
- + **Easy** - Easy to use, suppose format return.
- + **Light** - 38KB around with only one file.
- + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu, kuwo and more.
- + **Free** - Under MIT license, you can use it anywhere if you want.
+>![](http://ww2.sinaimg.cn/large/a15b4afegw1fbg1l7wn09j20fw05gq34)
+>## Meting
+>[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable)](https://packagist.org/packages/metowolf/Meting)
+>[![License](https://poser.pugx.org/metowolf/Meting/license)](https://packagist.org/packages/metowolf/Meting)
 
-## Requirement
-PHP 5.3+ and Curl extension installed
+> > :lollipop:Wow, such a powerful music API framework
 
-## Get Started
+>## Introduction
+>A powerful music API framework to accelerate development
 
-### Install via composer
-Add Meting to composer.json configuration file.
-```
-$ composer require metowolf/meting
-```
-And update the composer
-```
-$ composer update
-```
+>+ **Easy** - Easy to use, suppose format return.
+>+ **Light** - 38KB around with only one file.
+>+ **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu, >kuwo and more.
+>+ **Free** - Under MIT license, you can use it anywhere if you want.
 
-### Install via require
-```php
-// If you installed via composer, just use this code to requrie autoloader on the top of your projects.
-require 'vendor/autoload.php';
+>## Requirement
+>PHP 5.3+ and Curl extension installed
 
-// Else use require file
-// require 'Meting.php';
+>## Get Started
 
-// Initialize to netease API
-$API = new Meting('netease');
+>### Install via composer
+>Add Meting to composer.json configuration file.
+>```
+>$ composer require metowolf/meting
+>```
+>And update the composer
+>```
+>$ composer update
+>```
 
-// Enjoy
-$data = $API->format(true)->search('Soldier');
-```
+>### Install via require
+>```php
+>// If you installed via composer, just use this code to requrie autoloader on the top of your projects.
+>require 'vendor/autoload.php';
 
-## More usage
-[wiki/docs](https://github.com/metowolf/Meting/wiki)
 
-## Related Projects
- - [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
- - [Meting for Typecho](https://github.com/metowolf/Meting-Typecho-Plugin)
+>// Else use require file
+>// require 'Meting.php';
 
-## License
-Meting is under the MIT license.
+>// Initialize to netease API
+>$API = new Meting('netease');
 
-## Links
-Official website: https://i-meto.com  
-Demo: https://music.i-meto.com
+>// Enjoy
+>$data = $API->format(true)->search('Soldier');
+>```
+>
+
+
+>## More usage
+>[wiki/docs](https://github.com/metowolf/Meting/wiki)
+
+>## Related Projects
+>- [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
+>- [Meting for Typecho](https://github.com/metowolf/Meting-Typecho-Plugin)
+
+>## License
+>Meting is under the MIT license.
+
+>## Links
+>Official website: https://i-meto.com  
+>Demo: https://music.i-meto.com
