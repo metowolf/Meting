@@ -74,9 +74,9 @@ class Meting
         if ($error) {
             return json_encode(
                 array(
-                'error' => $error,
-                'info'  => $info,
-                'status' => $status,
+                    'error'  => $error,
+                    'info'   => $info,
+                    'status' => $status,
                 )
             );
         }
