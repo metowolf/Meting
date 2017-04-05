@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.3.2-dev
+ * Version 1.3.2
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -894,7 +894,7 @@ class Meting
         }
         else{
             $url=array(
-                'url' => "error",
+                'url' => "error",//str_replace('http:', 'https:', $data['data']['song']['listen_file']),
                 'br'  => 0,
             );
         }
