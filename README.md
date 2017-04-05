@@ -3,11 +3,12 @@
 + url解析的无封装支持
 + 扩展网易云封装
 + 修复网易云音乐的ape解析
++ 支持虾米音乐320k解析
 
 ## TODO
 + 无损格式更宽泛的支持
 + 统一的封装结构
-+ 虾米音乐320K支持
++ ~~虾米音乐320K支持~~
 + 腾讯音乐无损支持
 + 优化大量请求
 
@@ -48,6 +49,7 @@
 >```php
 >// If you installed via composer, just use this code to requrie autoloader on the top of your projects.
 >require 'vendor/autoload.php';
+>```
 
 
 >// Else use require file
@@ -60,6 +62,7 @@
 >$data = $API->format(true)->search('Soldier');
 >```
 >
+>```
 
 
 >## More usage

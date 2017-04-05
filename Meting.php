@@ -557,7 +557,7 @@ class Meting
             case 'xiami':
                 $API=array(
                     'method' => 'GET',
-                    'url'    => 'http://api.xiami.com/web',
+                    'url'    => 'http://www.xiami.com/song/gethqsong/sid/'.$id,
                     'body'   => array(
                         'v'       => '2.0',
                         'app_key' => '1',
@@ -860,10 +860,41 @@ class Meting
     private function xiami_url($result)
     {
         $data=json_decode($result, 1);
+        if(isset($data['location'])){
+          $location = $data['location'];
+          $num = (int)$location[0];
+          $str = substr($location,1);
+          $len = floor(strlen($str)/$num);
+          $sub = strlen($str) % $num;
+          $qrc = array();
+          $tmp = 0;
+          $urlt = '';
+          for(;$tmp<$sub;$tmp++){
+            $qrc[$tmp] = substr($str,$tmp*($len+1),$len+1);
+          }
+          for(;$tmp<$num;$tmp++){
+            $qrc[$tmp] = substr($str,$len*$tmp+$sub,$len);
+          }
+          for($tmpa=0;$tmpa<$len+1;$tmpa++){
+            for($tmpb=0;$tmpb<$num;$tmpb++){
+              if(isset($qrc[$tmpb][$tmpa])) $urlt.=$qrc[$tmpb][$tmpa];
+            }
+          }
+          for($tmp=0;$tmp<$sub;$tmp++){
+            //if(isset($qrc[$tmp][$len])) (string)$urlt.=(string)$qrc[$tmp][$len];
+          }
+          $urlt=str_replace('^','0',urldecode($urlt));
+          $url=array(
+              'url' => urldecode($urlt),
+              'br'  => 320,
+          );
+        }
+        else{
         $url=array(
-            'url' => str_replace('http:', 'https:', $data['data']['song']['listen_file']),
-            'br'  => 128,
+            'url' => "error",//str_replace('http:', 'https:', $data['data']['song']['listen_file']),
+            'br'  => 0,
         );
+        }
         return json_encode($url);
     }
     private function kugou_url($result)
