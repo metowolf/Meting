@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.3.1
+ * Version 1.3.2-dev
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -72,13 +72,15 @@ class Meting
         }
         curl_close($curl);
         if ($error) {
-            return json_encode(array(
-            'error' => $error,
-            'info'  => $info,
-            'status' => $status,
-        ));
+            return json_encode(
+                array(
+                'error' => $error,
+                'info'  => $info,
+                'status' => $status,
+                )
+            );
         }
-        if (isset($API['decode'])) {
+        if ($this->_FORMAT&&isset($API['decode'])) {
             $data=call_user_func_array(array($this,$API['decode']), array($data));
         }
         if ($this->_FORMAT&&isset($API['format'])) {
@@ -557,7 +559,7 @@ class Meting
             case 'xiami':
                 $API=array(
                     'method' => 'GET',
-                    'url'    => 'http://api.xiami.com/web',
+                    'url'    => 'http://www.xiami.com/song/gethqsong/sid/'.$id,
                     'body'   => array(
                         'v'       => '2.0',
                         'app_key' => '1',
@@ -811,10 +813,18 @@ class Meting
     private function netease_url($result)
     {
         $data=json_decode($result, 1);
-        $url=array(
-            'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
-            'br'  => $data['data'][0]['br']/1000,
-        );
+        if($data['data'][0]['uf'] != null) {
+            $url=array(
+                'url' => str_replace('http:', 'https:', $data['data'][0]['uf']['url']),
+                'br'  =>$data['data'][0]['uf']['br']/1000,
+            );
+        }
+        else{
+            $url=array(
+                'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
+                'br'  => $data['data'][0]['br']/1000,
+            );
+        }
         return json_encode($url);
     }
     private function tencent_url($result)
@@ -833,10 +843,10 @@ class Meting
         $KEY=json_decode($this->curl($API), 1)['key'];
 
         $type=array(
-            'size_320mp3'=>array(320,'M800','mp3'),
-            'size_128mp3'=>array(128,'M500','mp3'),
-            'size_96aac'=>array(96,'C400','m4a'),
-            'size_48aac'=>array(48,'C200','m4a'),
+            'size_320mp3' => array(320,'M800','mp3'),
+            'size_128mp3' => array(128,'M500','mp3'),
+            'size_96aac'  => array(96 ,'C400','m4a'),
+            'size_48aac'  => array(48 ,'C200','m4a'),
         );
         foreach ($type as $key=>$vo) {
             if ($data['data'][0]['file'][$key]&&$vo[0]<=$this->_temp['br']) {
@@ -852,10 +862,42 @@ class Meting
     private function xiami_url($result)
     {
         $data=json_decode($result, 1);
-        $url=array(
-            'url' => str_replace('http:', 'https:', $data['data']['song']['listen_file']),
-            'br'  => 128,
-        );
+        if(isset($data['location'])) {
+            $location = $data['location'];
+            $num = (int)$location[0];
+            $str = substr($location, 1);
+            $len = floor(strlen($str)/$num);
+            $sub = strlen($str) % $num;
+            $qrc = array();
+            $tmp = 0;
+            $urlt = '';
+            for(;$tmp<$sub;$tmp++){
+                $qrc[$tmp] = substr($str, $tmp*($len+1), $len+1);
+            }
+            for(;$tmp<$num;$tmp++){
+                $qrc[$tmp] = substr($str, $len*$tmp+$sub, $len);
+            }
+            for($tmpa=0;$tmpa<$len+1;$tmpa++){
+                for($tmpb=0;$tmpb<$num;$tmpb++){
+                    if(isset($qrc[$tmpb][$tmpa])) { $urlt.=$qrc[$tmpb][$tmpa];
+                    }
+                }
+            }
+            for($tmp=0;$tmp<$sub;$tmp++){
+                //if(isset($qrc[$tmp][$len])) (string)$urlt.=(string)$qrc[$tmp][$len];
+            }
+            $urlt=str_replace('^', '0', urldecode($urlt));
+            $url=array(
+              'url' => urldecode($urlt),
+              'br'  => 320,
+            );
+        }
+        else{
+            $url=array(
+                'url' => "error",
+                'br'  => 0,
+            );
+        }
         return json_encode($url);
     }
     private function kugou_url($result)
@@ -904,18 +946,18 @@ class Meting
      * 歌词处理模块
      * 用于规范化歌词输出
      */
-     private function netease_lyric($result)
-     {
-         if (!$this->_FORMAT) {
-             return $result;
-         }
-         $result=json_decode($result, 1);
-         $data=array(
-             'lyric'  => (@$result['lrc']['lyric'])?:'',
-             'tlyric' => (@$result['tlyric']['lyric'])?:'',
-         );
-         return json_encode($data);
-     }
+    private function netease_lyric($result)
+    {
+        if (!$this->_FORMAT) {
+            return $result;
+        }
+        $result=json_decode($result, 1);
+        $data=array(
+           'lyric'  => (@$result['lrc']['lyric'])?:'',
+           'tlyric' => (@$result['tlyric']['lyric'])?:'',
+        );
+        return json_encode($data);
+    }
     private function tencent_lyric($result)
     {
         $result=$this->jsonp2json($result);
