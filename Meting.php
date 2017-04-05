@@ -841,6 +841,8 @@ class Meting
         $KEY=json_decode($this->curl($API), 1)['key'];
 
         $type=array(
+            'size_ape' =>array(999,'A000','ape',true),
+            'size_flac' =>array(998,'F000','flac',true),
             'size_320mp3'=>array(320,'M800','mp3'),
             'size_128mp3'=>array(128,'M500','mp3'),
             'size_96aac'=>array(96,'C400','m4a'),
@@ -849,7 +851,7 @@ class Meting
         foreach ($type as $key=>$vo) {
             if ($data['data'][0]['file'][$key]&&$vo[0]<=$this->_temp['br']) {
                 $url=array(
-                    'url' => 'http://dl.stream.qqmusic.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2].'?vkey='.$KEY.'&guid='.$GUID.'&uid=0&fromtag=30',
+                    'url' => isset($vo[3])? 'http://stream.qqmusic.tc.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2]:'http://dl.stream.qqmusic.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2].'?vkey='.$KEY.'&guid='.$GUID.'&uid=0&fromtag=30',
                     'br'  => $vo[0],
                 );
                 break;
