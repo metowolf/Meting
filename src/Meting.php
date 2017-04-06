@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.3.2
+ * Version 1.3.2.1
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -700,14 +700,16 @@ class Meting
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data, 1)['data']['song']['logo'];
-                $url=str_replace(['_1.','http:','img.'], ['.','https:','pic.'], $url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
+                $data=json_decode($data, 1);
+                $url=$data['data']['song']['logo'];
+                $url=str_replace(array('_1.','http:','img.'), array('.','https:','pic.'), $url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
                 break;
             case 'kugou':
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data, 1)['imgUrl'];
+                $data=json_decode($data, 1);
+                $url=$data['imgUrl'];
                 $url=str_replace('{size}', '400', $url);
                 break;
             case 'baidu':
@@ -762,7 +764,7 @@ class Meting
         $KEY='7246674226682325323F5E6544673A51';
         $body=json_encode($API['body']);
         if (function_exists('openssl_encrypt')) {
-            $body=openssl_encrypt($body, 'aes-128-ecb', hex2bin($KEY));
+            $body=openssl_encrypt($body, 'aes-128-ecb', pack('H*', $KEY));
         } else {
             $PAD=16-(strlen($body)%16);
             $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hex2bin($KEY), $body.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_ECB));
@@ -803,7 +805,7 @@ class Meting
             $song_id[$i]=chr(ord($song_id[$i])^ord($magic[$i%count($magic)]));
         }
         $result=base64_encode(md5(implode('', $song_id), 1));
-        $result=str_replace(['/','+'], ['_','-'], $result);
+        $result=str_replace(array('/','+'), array('_','-'), $result);
         return $result;
     }
     /**
@@ -840,7 +842,8 @@ class Meting
             ),
             'decode' => 'jsonp2json',
         );
-        $KEY=json_decode($this->curl($API), 1)['key'];
+        $KEY=json_decode($this->curl($API), 1);
+        $KEY=$KEY['key'];
 
         $type=array(
             'size_320mp3' => array(320,'M800','mp3'),
