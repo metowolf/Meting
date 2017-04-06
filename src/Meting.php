@@ -700,14 +700,20 @@ class Meting
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data, 1)['data']['song']['logo'];
-                $url=str_replace(['_1.','http:','img.'], ['.','https:','pic.'], $url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
+				
+                $json=json_decode($data, 1);
+				$url=$json['data']['song']['logo'];
+				$url=str_replace('_1.', '.', $url);
+				$url=str_replace('http:', 'https:', $url);
+				$url=str_replace('img.', 'pic.', $url).'@'.$size.'h_'.$size.'w_100q_1c.jpg';
                 break;
             case 'kugou':
                 $format=$this->_FORMAT;
                 $data=$this->format(false)->song($id);
                 $this->format($format);
-                $url=json_decode($data, 1)['imgUrl'];
+				
+				$json=json_decode($data, 1);
+                $url=$json['imgUrl'];
                 $url=str_replace('{size}', '400', $url);
                 break;
             case 'baidu':
@@ -762,10 +768,10 @@ class Meting
         $KEY='7246674226682325323F5E6544673A51';
         $body=json_encode($API['body']);
         if (function_exists('openssl_encrypt')) {
-            $body=openssl_encrypt($body, 'aes-128-ecb', hex2bin($KEY));
+            $body=openssl_encrypt($body, 'aes-128-ecb', $this->hex2bin($KEY));
         } else {
             $PAD=16-(strlen($body)%16);
-            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hex2bin($KEY), $body.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_ECB));
+            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->hex2bin($KEY), $body.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_ECB));
         }
         $body=strtoupper(bin2hex(base64_decode($body)));
 
@@ -803,7 +809,9 @@ class Meting
             $song_id[$i]=chr(ord($song_id[$i])^ord($magic[$i%count($magic)]));
         }
         $result=base64_encode(md5(implode('', $song_id), 1));
-        $result=str_replace(['/','+'], ['_','-'], $result);
+		
+		$result=str_replace('/', '_', $result);
+		$result=str_replace('+', '-', $result);
         return $result;
     }
     /**
@@ -840,7 +848,9 @@ class Meting
             ),
             'decode' => 'jsonp2json',
         );
-        $KEY=json_decode($this->curl($API), 1)['key'];
+		
+		$json=json_decode($this->curl($API), 1);
+        $KEY=$json['key'];
 
         $type=array(
             'size_320mp3' => array(320,'M800','mp3'),
@@ -1090,4 +1100,10 @@ class Meting
         );
         return $result;
     }
+	
+	private function hex2bin($data)
+	{
+		$length = strlen($data);
+		return pack("H" . $length, $data);
+	}
 }
