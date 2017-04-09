@@ -11,7 +11,7 @@ A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
  + **Light** - 38KB around with only one file.
- + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu, kuwo and more.
+ + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
 ## Requirement
