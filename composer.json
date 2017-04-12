@@ -11,11 +11,20 @@
 	"homepage": "https://github.com/metowolf/Meting",
 	"license": "MIT",
 	"authors": [
-		{"name": "metowolf", "email": "i@i-meto.com"}
+		{
+			"name": "metowolf",
+			"email": "i@i-meto.com",
+			"homepage": "https://i-meto.com"
+		}
 	],
+	"support": {
+        "issues": "https://github.com/metowolf/Meting/issues",
+        "source": "https://github.com/metowolf/Meting"
+    },
 	"require": {
-		"php": ">=5.3",
-        "ext-curl": "*"
+		"php": ">=5.4.0",
+        "ext-curl": "*",
+		"ext-openssl": "*"
 	},
 	"autoload": {
         "psr-4": {
