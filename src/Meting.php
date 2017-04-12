@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.3.2.1
+ * Version 1.3.3
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -123,19 +123,15 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/cloudsearch/pc',
                     'body'   => array(
-                        'method' => 'POST',
-                        'params' => array(
-                            's'      => $keyword,
-                            'type'   => 1,
-                            'limit'  => $limit,
-                            'total'  => 'true',
-                            'offset' => $page-1,
-                        ),
-                        'url' => 'http://music.163.com/api/cloudsearch/pc',
+                        's'      => $keyword,
+                        'type'   => 1,
+                        'limit'  => $limit,
+                        'total'  => 'true',
+                        'offset' => $page-1,
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'format' => 'result#songs',
                 );
                 break;
@@ -217,15 +213,11 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/v3/song/detail',
                     'body'   => array(
-                        'method' => 'POST',
-                        'params' => array(
-                            'c' => '[{"id":'.$id.'}]',
-                        ),
-                        'url' => 'http://music.163.com/api/v3/song/detail',
+                        'c' => '[{"id":'.$id.'}]',
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'format' => 'songs',
                 );
                 break;
@@ -293,15 +285,11 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/v1/album/'.$id,
                     'body'   => array(
-                        'method' => 'GET',
-                        'params' => array(
-                            'id' => $id,
-                        ),
-                        'url' => 'http://music.163.com/api/v1/album/'.$id,
+                        'id' => $id,
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'format' => 'songs',
                 );
                 break;
@@ -369,17 +357,13 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/v1/artist/'.$id,
                     'body'   => array(
-                        'method' => 'GET',
-                        'params' => array(
-                            'top' => $limit,
-                            "id"  => $id,
-                            "ext" => "true",
-                        ),
-                        'url' => 'http://music.163.com/api/v1/artist/'.$id,
+                        'top' => $limit,
+                        "id"  => $id,
+                        "ext" => "true",
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'format' => 'hotSongs',
                 );
                 break;
@@ -452,16 +436,12 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/v3/playlist/detail',
                     'body'   => array(
-                        'method' => 'POST',
-                        'params' => array(
-                            'id' => $id,
-                            "n"  => 1000,
-                        ),
-                        'url' => 'http://music.163.com/api/v3/playlist/detail',
+                        'id' => $id,
+                        "n"  => 1000,
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'format' => 'playlist#tracks',
                 );
                 break;
@@ -532,16 +512,12 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/song/enhance/player/url',
                     'body'   => array(
-                        'method' => 'POST',
-                        'params' => array(
-                            'ids' => array($id),
-                            'br'  => $br*1000,
-                        ),
-                        'url' => 'http://music.163.com/api/song/enhance/player/url',
+                        'ids' => array($id),
+                        'br'  => $br*1000,
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'decode' => 'netease_url',
                 );
                 break;
@@ -613,19 +589,15 @@ class Meting
             case 'netease':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://music.163.com/api/linux/forward',
+                    'url'    => 'http://music.163.com/weapi/song/lyric',
                     'body'   => array(
-                        'method' => 'POST',
-                        'params' => array(
-                            'id' => $id,
-                            'os' => 'linux',
-                            'lv' => -1,
-                            'kv' => -1,
-                            'tv' => -1,
-                        ),
-                        'url' => 'http://music.163.com/api/song/lyric',
+                        'id' => $id,
+                        'os' => 'linux',
+                        'lv' => -1,
+                        'kv' => -1,
+                        'tv' => -1,
                     ),
-                    'encode' => 'netease_AESECB',
+                    'encode' => 'netease_AESCBC',
                     'decode' => 'netease_lyric',
                 );
                 break;
@@ -728,8 +700,8 @@ class Meting
         $BASE=array(
             'netease'=>array(
                 'referer'   => 'https://music.163.com/',
-                'cookie'    => 'os=linux; appver=1.0.0.1026; osver=Ubuntu%2016.10; MUSIC_U=78d411095f4b022667bc8ec49e9a44cca088df057d987f5feaf066d37458e41c4a7d9447977352cf27ea9fee03f6ec4441049cea1c6bb9b6; __remember_me=true',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                'cookie'    => 'os=iPhone OS; osver=10.3.1; appver=4.0.1; MUSIC_U=78d411095f4b022667bc8ec49e9a44cca088df057d987f5feaf066d37458e41c4a7d9447977352cf27ea9fee03f6ec4441049cea1c6bb9b6; __remember_me=true',
+                'useragent' => '网易云音乐 4.0.1 rv:806 (iPhone; iOS 10.3.1; zh_CN)',
             ),
             'tencent'=>array(
                 'referer'   => 'http://y.qq.com/portal/player.html',
@@ -759,20 +731,15 @@ class Meting
      * 乱七八糟的函数，加密解密...
      * 正在努力重构这些代码 TAT
      */
-    private function netease_AESECB($API)
+    private function netease_AESCBC($API)
     {
-        $KEY='7246674226682325323F5E6544673A51';
+        $VI='0102030405060708';
         $body=json_encode($API['body']);
-        if (function_exists('openssl_encrypt')) {
-            $body=openssl_encrypt($body, 'aes-128-ecb', pack('H*', $KEY));
-        } else {
-            $PAD=16-(strlen($body)%16);
-            $body=base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, hex2bin($KEY), $body.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_ECB));
-        }
-        $body=strtoupper(bin2hex(base64_decode($body)));
-
+        $body=openssl_encrypt($body, 'aes-128-cbc', '0CoJUm6Qyw8W8jud', false, $VI);
+        $body=openssl_encrypt($body, 'aes-128-cbc', 'MetingxxMetowolf', false, $VI);
         $API['body']=array(
-            'eparams'=>$body,
+            'params'=>$body,
+            'encSecKey'=>'bc195fbe4418512169e8934cc4428e214e073f10227e6604ea11c17de037e18abda2488149083c7ef0ec48796cda7f39ae782eebc0724106ad19e0bd395f5ed3d8695905e9d851304b071bc4e1f3c759a08656cc9e77dee54ae6130aedd53015f779c3e11895341d9bb4ec8e8010bd9b7f1a515cb44b714c694a0af76ac378aa',
         );
         return $API;
     }
@@ -816,17 +783,12 @@ class Meting
     {
         $data=json_decode($result, 1);
         if($data['data'][0]['uf'] != null) {
-            $url=array(
-                'url' => str_replace('http:', 'https:', $data['data'][0]['uf']['url']),
-                'br'  =>$data['data'][0]['uf']['br']/1000,
-            );
+            $data['data'][0]=$data['data'][0]['uf'];
         }
-        else{
-            $url=array(
-                'url' => str_replace('http:', 'https:', $data['data'][0]['url']),
-                'br'  => $data['data'][0]['br']/1000,
-            );
-        }
+        $url=array(
+            'url' => str_replace('http://m8', 'https://m8', $data['data'][0]['url']),
+            'br'  => $data['data'][0]['br']/1000,
+        );
         return json_encode($url);
     }
     private function tencent_url($result)
