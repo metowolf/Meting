@@ -1020,6 +1020,7 @@ class Meting
             'name'      => $data['name'],
             'artist'    => array(),
             'pic_id'    => (@$data['al']['pic_str'])?:$data['al']['pic'],
+            'album'     => (@$data['al']['name'])?:$data['al']['name'],
             'url_id'    => $data['id'],
             'lyric_id'  => $data['id'],
             'source'    => 'netease',
