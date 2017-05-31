@@ -2,7 +2,7 @@
 /*!
  * Meting music framework
  * https://i-meto.com
- * Version 1.3.3
+ * Version 1.3.4
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -171,21 +171,23 @@ class Meting
                 );
                 break;
             case 'kugou':
-                $API=array(
-                    'method' => 'GET',
-                    'url'    => 'http://mobilecdn.kugou.com/api/v3/search/song',
-                    'body'   => array(
-                        'iscorrect' => 1,
-                        'pagesize'  => $limit,
-                        'plat'      => 20,
-                        'sver'      => 3,
-                        'showtype'  => 14,
-                        'page'      => $page,
-                        'keyword'   => $keyword,
-                    ),
-                    'format' => 'data#info',
-                );
-                break;
+				$API=array(
+						'method' => 'GET',
+						'url'    => 'http://ioscdn.kugou.com/api/v3/search/song',
+						'body'   => array(
+							'iscorrect' => 1,
+							'pagesize'  => $limit,
+							'plat'      => 2,
+							'tag'       => 1,
+							'sver'      => 5,
+							'showtype'  => 10,
+							'page'      => $page,
+							'keyword'   => $keyword,
+							'version'   => 8550
+							),
+						'format' => 'data#info',
+						);
+				break;
             case 'baidu':
                 $API=array(
                     'method' => 'GET',
@@ -337,7 +339,7 @@ class Meting
                         'plat'     => 2,
                         'page'     => 1,
                         'pagesize' => -1,
-                        'version'  => 8400,
+                        'version'  => 8550,
                     ),
                     'format' => 'data#info',
                 );
