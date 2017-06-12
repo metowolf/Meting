@@ -10,7 +10,7 @@
 A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
- + **Light** - 38KB around with only one file.
+ + **Light** - 40KB around with only one file.
  + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
@@ -43,6 +43,9 @@ use Metowolf\Meting;
 // Initialize to netease API
 $API = new Meting('netease');
 
+// Use custom cookie*
+$API->cookie('paste your cookie');
+
 // Get data
 $data = $API->format(true)->search('Soldier');
 
@@ -57,6 +60,7 @@ echo $data;
 ## Related Projects
  - [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
  - [Meting for Typecho](https://github.com/metowolf/Meting-Typecho-Plugin)
+ - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
 
 ## License
 Meting is under the MIT license.
