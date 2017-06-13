@@ -615,7 +615,7 @@ class Meting
                 );
                 break;
         }
-        $this->_temp['br']=$br;
+        $this->_TEMP['br']=$br;
         return $this->curl($API);
     }
 
@@ -729,7 +729,7 @@ class Meting
                 $data=$this->format(false)->song($id);
                 $this->format($format);
                 $data=json_decode($data, 1);
-                $url=$data['songinfo']['pic_big']?:$data['songinfo']['pic_small'];
+                $url=isset($data['songinfo']['pic_big'])?$data['songinfo']['pic_big']:$data['songinfo']['pic_small'];
                 break;
         }
         return json_encode(array('url'=>$url));
@@ -868,7 +868,7 @@ class Meting
             'size_48aac'  => array(48 ,'C200','m4a'),
         );
         foreach ($type as $key=>$vo) {
-            if ($data['data'][0]['file'][$key]&&$vo[0]<=$this->_temp['br']) {
+            if ($data['data'][0]['file'][$key]&&$vo[0]<=$this->_TEMP['br']) {
                 $url=array(
                     'url' => 'http://dl.stream.qqmusic.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2].'?vkey='.$KEY.'&guid='.$GUID.'&uid=0&fromtag=30',
                     'br'  => $vo[0],
@@ -929,7 +929,7 @@ class Meting
         $max=0;
         $url=array();
         foreach ($data['data'][0]['relate_goods'] as $vo) {
-            if ($vo['info']['bitrate']<=$this->_temp['br']&&$vo['info']['bitrate']>$max) {
+            if ($vo['info']['bitrate']<=$this->_TEMP['br']&&$vo['info']['bitrate']>$max) {
                 $API=array(
                     'method' => 'GET',
                     'url'    => 'http://trackercdn.kugou.com/i/v2/',

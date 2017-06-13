@@ -61,6 +61,7 @@ echo $data;
  - [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
  - [Meting for Typecho](https://github.com/metowolf/Meting-Typecho-Plugin)
  - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
+ - [WP-Player](https://github.com/webjyh/WP-Player)
 
 ## License
 Meting is under the MIT license.
