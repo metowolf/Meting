@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.5.1
+ * Version 1.3.5.2
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -886,7 +886,7 @@ class Meting
     private function xiami_url($result)
     {
         $data=json_decode($result, 1);
-        if (isset($data['location'])) {
+        if (!empty($data['location'])) {
             $location = $data['location'];
             $num = (int)$location[0];
             $str = substr($location, 1);
@@ -1017,10 +1017,23 @@ class Meting
             $data=$this->curl($API);
             $data=preg_replace('/<[^>]+>/', '', $data);
         }
-        $arr=array(
-            'lyric'  => $data,
-            'tlyric' => '',
-        );
+        preg_match_all('/\[([\d:\.]+)\](.*)\s\[x-trans\](.*)/i',$data,$match);
+        if(sizeof($match[0])){
+            for($i=0;$i<sizeof($match[0]);$i++){
+                $A[]='['.$match[1][$i].']'.$match[2][$i];
+                $B[]='['.$match[1][$i].']'.$match[3][$i];
+            }
+            $arr=array(
+                'lyric'  => str_replace($match[0],$A,$data),
+                'tlyric' => str_replace($match[0],$B,$data),
+            );
+        }
+        else{
+            $arr=array(
+                'lyric'  => $data,
+                'tlyric' => '',
+            );
+        }
         return json_encode($arr);
     }
     private function kugou_lyric($result)
