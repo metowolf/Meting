@@ -14,4 +14,4 @@ install:
   - travis_retry composer install --no-interaction
 
 script:
-  - php vendor/bin/phpunit
+  - phpunit
