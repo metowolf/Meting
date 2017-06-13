@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.5
+ * Version 1.3.5.1
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -25,7 +25,8 @@ class Meting
 
     public function site($v)
     {
-        $this->_SITE=$v;
+        $suppose=array('netease','tencent','xiami','kugou','baidu');
+        $this->_SITE=in_array($v,$suppose)?$v:'netease';
         return $this;
     }
 
@@ -106,7 +107,7 @@ class Meting
         $t=explode('#', $rule);
         foreach ($t as $vo) {
             if (is_null($array)) {
-                return null;
+                return array();
             }
             $array=$array[$vo];
         }
@@ -118,9 +119,7 @@ class Meting
         if (!empty($rule)) {
             $raw=$this->pickup($raw, $rule);
         }
-        if (is_null($raw)) {
-            $raw=array();
-        } elseif (!isset($raw[0])) {
+        if (!isset($raw[0])&&sizeof($raw)) {
             $raw=array($raw);
         }
         $result=array_map(array($this,'format_'.$this->_SITE), $raw);
@@ -1012,9 +1011,12 @@ class Meting
             return $result;
         }
         $result=json_decode($result, 1);
-        $API=array('method'=>'GET','url'=>$result['data']['song']['lyric']);
-        $data=$this->curl($API);
-        $data=preg_replace('/<[^>]+>/', '', $data);
+        $data='';
+        if(!empty($result['data']['song']['lyric'])){
+            $API=array('method'=>'GET','url'=>$result['data']['song']['lyric']);
+            $data=$this->curl($API);
+            $data=preg_replace('/<[^>]+>/', '', $data);
+        }
         $arr=array(
             'lyric'  => $data,
             'tlyric' => '',
