@@ -1,6 +1,7 @@
 ![](http://ww2.sinaimg.cn/large/a15b4afegw1fbg1l7wn09j20fw05gq34)
 
 ## Meting
+[![Build Status](https://travis-ci.org/metowolf/Meting.svg?branch=master)](https://travis-ci.org/metowolf/Meting)
 [![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable)](https://packagist.org/packages/metowolf/Meting)
 [![License](https://poser.pugx.org/metowolf/Meting/license)](https://packagist.org/packages/metowolf/Meting)
 
