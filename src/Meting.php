@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.6
+ * Version 1.3.6.1
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -842,8 +842,6 @@ class Meting
                 'br'  => -1,
             );
         }
-        $url['url']=str_replace('http://m8','http://m7',$url['url']);
-        $url['url']=str_replace('http://m7','https://m7',$url['url']);
         return json_encode($url);
     }
     private function tencent_url($result)
