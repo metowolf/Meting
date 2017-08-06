@@ -1,9 +1,12 @@
-![](http://ww2.sinaimg.cn/large/a15b4afegw1fbg1l7wn09j20fw05gq34)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/2666735/28999701-04c6ba7e-7a84-11e7-804b-3ffa4f7d5d95.png" alt="Meting">
+</p>
 
 ## Meting
-[![Build Status](https://travis-ci.org/metowolf/Meting.svg?branch=master)](https://travis-ci.org/metowolf/Meting)
-[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable)](https://packagist.org/packages/metowolf/Meting)
-[![License](https://poser.pugx.org/metowolf/Meting/license)](https://packagist.org/packages/metowolf/Meting)
+[![Build Status](https://img.shields.io/travis/metowolf/Meting.svg?style=flat-square)](https://travis-ci.org/metowolf/Meting)
+[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable?format=flat-square)](https://packagist.org/packages/metowolf/Meting)
+[![Total Downloads](https://poser.pugx.org/metowolf/meting/downloads?format=flat-square)](https://packagist.org/packages/metowolf/meting)
+[![License](https://poser.pugx.org/metowolf/Meting/license?format=flat-square)](https://packagist.org/packages/metowolf/Meting)
 
  > :lollipop:Wow, such a powerful music API framework
 
@@ -11,62 +14,68 @@
 A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
- + **Light** - 40KB around with only one file.
+ + **Light** - 42KB around with only one file.
  + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
 ## Requirement
 PHP 5.4+ and Curl, OpenSSL extension installed
 
-## Get Started
+## Install
+Require this package, with [Composer](https://getcomposer.org), in the root directory of your project.
 
-### Install via composer
-Add Meting to composer.json configuration file.
-```
+```bash
 $ composer require metowolf/meting
 ```
-And update the composer
-```
-$ composer update
-```
 
-### Install via require
+Then you can import the class into your application:
+
 ```php
-// If you installed via composer, just use this code to requrie autoloader on the top of your projects.
-require 'vendor/autoload.php';
+use Metowolf\Meting;
 
-// Or require file
+$api = new Meting('netease');
+
+$data = $api->format(true)->search('Soldier');
+```
+
+> **Note:** Meting requires the [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
+
+
+## Quick Start
+```php
+require 'vendor/autoload.php';
 // require 'Meting.php';
 
-// Using Metowolf namespace
 use Metowolf\Meting;
 
 // Initialize to netease API
-$API = new Meting('netease');
+$api = new Meting('netease');
 
-// Use custom cookie*
-$API->cookie('paste your cookie');
+// Use custom cookie (option)
+$api->cookie('paste your cookie');
 
 // Get data
-$data = $API->format(true)->search('Soldier');
+$data = $api->format(true)->search('Soldier');
 
 // Enjoy
 echo $data;
-
 ```
 
 ## More usage
-[wiki/docs](https://github.com/metowolf/Meting/wiki)
+ - [wiki/docs](https://github.com/metowolf/Meting/wiki)
+
+## Join the Discussion
+ - [Telegram Group](https://t.me/adplayer)
+ - [Official website](https://i-meto.com)
 
 ## Related Projects
- - [Hermit-X (Wordpress)](https://github.com/liwanglin12/Hermit-X)
- - [Meting for Typecho](https://github.com/metowolf/Meting-Typecho-Plugin)
+ - [Hermit-X (Wordpress)](https://github.com/MoePlayer/Hermit-X)
+ - [APlayer-Typecho](https://github.com/MoePlayer/APlayer-Typecho)
  - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
  - [WP-Player](https://github.com/webjyh/WP-Player)
 
-## License
-Meting is under the MIT license.
+## Author
 
-## Links
-Official website: https://i-meto.com  
-Demo: https://music.i-meto.com
+**Meting** © [metowolf](https://github.com/metowolf), Released under the [MIT](./LICENSE) License.<br>
+
+> Blog [@meto](https://i-meto.com) · GitHub [@metowolf](https://github.com/metowolf) · Twitter [@metowolf](https://twitter.com/metowolf) · Telegram Channel [@metooooo](https://t.me/metooooo)

@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.6.1
+ * Version 1.3.7
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -106,7 +106,7 @@ class Meting
     {
         $t=explode('#', $rule);
         foreach ($t as $vo) {
-            if (is_null($array)) {
+            if (!isset($array[$vo])){
                 return array();
             }
             $array=$array[$vo];
@@ -151,7 +151,7 @@ class Meting
             case 'tencent':
                 $API=array(
                     'method' => 'GET',
-                    'url'    => 'https://c.y.qq.com/soso/fcgi-bin/search_cp',
+                    'url'    => 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
                     'body'   => array(
                         'p'        => $page,
                         'n'        => $limit,
@@ -159,6 +159,7 @@ class Meting
                         'aggr'     => 1,
                         'lossless' => 1,
                         'cr'       => 1,
+                        'platform' => 'yqq',
                     ),
                     'decode' => 'jsonp2json',
                     'format' => 'data#song#list',
@@ -245,8 +246,9 @@ class Meting
                     'method' => 'GET',
                     'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
                     'body'   => array(
-                        'songmid' => $id,
-                        'format'  => 'json',
+                        'songmid'  => $id,
+                        'platform' => 'yqq',
+                        'format'   => 'json',
                     ),
                     'decode' => 'tencent_singlesong',
                     'format' => 'data',
@@ -322,6 +324,7 @@ class Meting
                     'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_info_cp.fcg',
                     'body'   => array(
                         'albummid' => $id,
+                        'platform' => 'yqq',
                     ),
                     'format' => 'data#list',
                 );
@@ -402,6 +405,8 @@ class Meting
                         'singermid' => $id,
                         'begin'     => 0,
                         'num'       => $limit,
+                        'order'     => 'listen',
+                        'platform'  => 'yqq',
                     ),
                     'format' => 'data#list',
                 );
@@ -481,9 +486,10 @@ class Meting
                     'method' => 'GET',
                     'url'    => 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
                     'body'   => array(
-                        'disstid' => $id,
-                        'utf8'    => 1,
-                        'type'    => 1,
+                        'disstid'  => $id,
+                        'utf8'     => 1,
+                        'type'     => 1,
+                        'platform' => 'yqq',
                     ),
                     'decode' => 'jsonp2json',
                     'format' => 'cdlist#0#songlist',
@@ -562,6 +568,7 @@ class Meting
                     'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
                     'body'   => array(
                         'songmid' => $id,
+                        'platform' => 'yqq',
                         'format'  => 'json',
                     ),
                     'decode' => 'tencent_url',
@@ -743,8 +750,8 @@ class Meting
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'tencent'=>array(
-                'referer'   => 'http://y.qq.com/portal/player.html',
-                'cookie'    => 'qqmusic_uin=12345678; qqmusic_key=12345678; qqmusic_fromtag=30; ts_last=y.qq.com/portal/player.html;',
+                'referer'   => 'https://y.qq.com/portal/player.html',
+                'cookie'    => 'pgv_pvi=3832878080; pgv_si=s4066364416; pgv_pvid=3938077488; yplayer_open=1; qqmusic_fromtag=66; ts_last=y.qq.com/portal/player.html; ts_uid=5141451452; player_exist=1; yq_index=1',
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'xiami'=>array(
@@ -862,6 +869,7 @@ class Meting
 
         $type=array(
             'size_320mp3' => array(320,'M800','mp3'),
+            'size_192aac' => array(192,'C600','m4a'),
             'size_128mp3' => array(128,'M500','mp3'),
             'size_96aac'  => array(96 ,'C400','m4a'),
             'size_48aac'  => array(48 ,'C200','m4a'),
