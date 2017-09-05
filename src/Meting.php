@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.7
+ * Version 1.3.8
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -140,7 +140,7 @@ class Meting
                             'type'   => 1,
                             'limit'  => $limit,
                             'total'  => 'true',
-                            'offset' => $page-1,
+                            'offset' => ($page-1)*$limit,
                         ),
                         'url' => 'http://music.163.com/api/cloudsearch/pc',
                     ),
@@ -270,7 +270,7 @@ class Meting
             case 'kugou':
                 $API=array(
                     'method' => 'POST',
-                    'url'    => 'http://m.kugou.com/app/i/getSongInfo.php?',
+                    'url'    => 'http://m.kugou.com/app/i/getSongInfo.php',
                     'body'   => array(
                         "cmd"  => "playInfo",
                         "hash" => $id,
