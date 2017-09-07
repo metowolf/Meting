@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://user-images.githubusercontent.com/2666735/28999701-04c6ba7e-7a84-11e7-804b-3ffa4f7d5d95.png" alt="Meting">
+<img src="https://user-images.githubusercontent.com/2666735/30165599-36623bea-93a6-11e7-8956-1ddf99ce0e6f.png" alt="Meting">
 </p>
 
 ## Meting

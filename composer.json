@@ -1,7 +1,7 @@
 {
 	"name": "metowolf/meting",
 	"type": "library",
-	"description": "A powerful music API framework to accelerate development.一个轻量高效的音乐接口类",
+	"description": "A powerful music API framework to accelerate development.",
 	"keywords": [
         "php music",
         "music api",

@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.8
+ * Version 1.3.9
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -153,15 +153,15 @@ class Meting
                     'method' => 'GET',
                     'url'    => 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
                     'body'   => array(
+                        'format'   => 'json',
                         'p'        => $page,
                         'n'        => $limit,
                         'w'        => $keyword,
                         'aggr'     => 1,
                         'lossless' => 1,
                         'cr'       => 1,
-                        'platform' => 'yqq',
+                        'new_json' => 1,
                     ),
-                    'decode' => 'jsonp2json',
                     'format' => 'data#song#list',
                 );
                 break;
@@ -321,12 +321,14 @@ class Meting
             case 'tencent':
                 $API=array(
                     'method' => 'GET',
-                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_info_cp.fcg',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg',
                     'body'   => array(
                         'albummid' => $id,
-                        'platform' => 'yqq',
+                        'platform' => 'mac',
+                        'format'   => 'json',
+                        'newsong'  => 1,
                     ),
-                    'format' => 'data#list',
+                    'format' => 'data#getSongInfo',
                 );
                 break;
             case 'xiami':
@@ -406,7 +408,8 @@ class Meting
                         'begin'     => 0,
                         'num'       => $limit,
                         'order'     => 'listen',
-                        'platform'  => 'yqq',
+                        'platform'  => 'mac',
+                        'newsong'   => 1,
                     ),
                     'format' => 'data#list',
                 );
@@ -484,15 +487,14 @@ class Meting
             case 'tencent':
                 $API=array(
                     'method' => 'GET',
-                    'url'    => 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+                    'url'    => 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg',
                     'body'   => array(
-                        'disstid'  => $id,
-                        'utf8'     => 1,
-                        'type'     => 1,
-                        'platform' => 'yqq',
+                        'id'       => $id,
+                        'format'   => 'json',
+                        'newsong'  => 1,
+                        'platform' => 'jqspaframe.json',
                     ),
-                    'decode' => 'jsonp2json',
-                    'format' => 'cdlist#0#songlist',
+                    'format' => 'data#cdlist#0#songlist',
                 );
                 break;
             case 'xiami':
@@ -653,7 +655,7 @@ class Meting
                     'url'    => 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
                     'body'   => array(
                         'songmid'  => $id,
-                        'g_tk'     => 5381,
+                        'g_tk'     => '5381',
                     ),
                     'decode' => 'tencent_lyric',
                 );
@@ -751,7 +753,7 @@ class Meting
             ),
             'tencent'=>array(
                 'referer'   => 'https://y.qq.com/portal/player.html',
-                'cookie'    => 'pgv_pvi=3832878080; pgv_si=s4066364416; pgv_pvid=3938077488; yplayer_open=1; qqmusic_fromtag=66; ts_last=y.qq.com/portal/player.html; ts_uid=5141451452; player_exist=1; yq_index=1',
+                'cookie'    => 'pgv_pvi=22038528; pgv_si=s3156287488; pgv_pvid=5535248600; yplayer_open=1; ts_last=y.qq.com/portal/player.html; ts_uid=4847550686; yq_index=0; qqmusic_fromtag=66; player_exist=1',
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
             ),
             'xiami'=>array(
@@ -794,13 +796,6 @@ class Meting
         );
         return $API;
     }
-    private function jsonp2json($jsonp)
-    {
-        if ($jsonp[0] !== '[' && $jsonp[0] !== '{') {
-            $jsonp = substr($jsonp, strpos($jsonp, '('));
-        }
-        return trim($jsonp, '();');
-    }
     private function tencent_singlesong($result)
     {
         $result=json_decode($result, 1);
@@ -834,11 +829,9 @@ class Meting
     {
         $data=json_decode($result, 1);
         if (isset($data['data'][0]['uf']['url'])) {
-            $url=array(
-                'url' => $data['data'][0]['uf']['url'],
-                'br'  =>$data['data'][0]['uf']['br']/1000,
-            );
-        } elseif (isset($data['data'][0]['url'])) {
+            $data['data'][0]['url']=$data['data'][0]['uf']['url'];
+        }
+        if (isset($data['data'][0]['url'])) {
             $url=array(
                 'url' => $data['data'][0]['url'],
                 'br'  => $data['data'][0]['br']/1000,
@@ -859,10 +852,10 @@ class Meting
             'method' => 'GET',
             'url'    => 'https://c.y.qq.com/base/fcgi-bin/fcg_musicexpress.fcg',
             'body'   => array(
-                'json' => 3,
-                'guid' => $GUID,
+                'json'   => 3,
+                'guid'   => $GUID,
+                'format' => 'json',
             ),
-            'decode' => 'jsonp2json',
         );
         $KEY=json_decode($this->curl($API), 1);
         $KEY=$KEY['key'];
@@ -918,8 +911,8 @@ class Meting
             }
             $urlt=str_replace('^', '0', urldecode($urlt));
             $url=array(
-              'url' => str_replace('http://','https://',urldecode($urlt)),
-              'br'  => 320,
+                'url' => str_replace('http://','https://',urldecode($urlt)),
+                'br'  => 320,
             );
         } else {
             $url=array(
@@ -1002,7 +995,7 @@ class Meting
     }
     private function tencent_lyric($result)
     {
-        $result=$this->jsonp2json($result);
+        $result=substr($result,18,-1);
         if (!$this->_FORMAT) {
             return $result;
         }
@@ -1098,13 +1091,13 @@ class Meting
             $data=$data['musicData'];
         }
         $result=array(
-            'id'        => $data['songmid'],
-            'name'      => $data['songname'],
+            'id'        => $data['mid'],
+            'name'      => $data['name'],
             'artist'    => array(),
-            'album'     => isset($data['albumname'])?$data['albumname']:$data['album']['name'],
-            'pic_id'    => $data['albummid'],
-            'url_id'    => $data['songmid'],
-            'lyric_id'  => $data['songmid'],
+            'album'     => trim($data['album']['title']),
+            'pic_id'    => $data['album']['mid'],
+            'url_id'    => $data['mid'],
+            'lyric_id'  => $data['mid'],
             'source'    => 'tencent',
         );
         foreach ($data['singer'] as $vo) {
