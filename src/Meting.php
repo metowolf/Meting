@@ -742,6 +742,24 @@ class Meting
         }
         return json_encode(array('url'=>$url));
     }
+    
+    public function link($id)
+    {
+        $id = urlencode($id);
+        switch ($this->_SITE) {
+            case 'netease':
+                return 'http://music.163.com/#/song?id='.$id.'';
+            case 'tencent':
+                return 'https://y.qq.com/n/yqq/song/'.$id.'.html';
+            case 'xiami':
+                return 'http://www.xiami.com/song/'.$id.'';
+            case 'kugou':
+                return 'http://www.kugou.com/song/#hash='.$id.'';
+            case 'baidu':
+                return 'http://music.baidu.com/song/'.$id.'';
+        }
+        return null;
+    }
 
     private function curlset()
     {
