@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.3.9
+ * Version 1.3.10
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -745,34 +745,47 @@ class Meting
 
     private function curlset()
     {
-        $BASE=array(
-            'netease'=>array(
-                'referer'   => 'https://music.163.com/',
-                'cookie'    => 'os=linux; appver=1.0.0.1026; osver=Ubuntu%2016.10; MUSIC_U=78d411095f4b022667bc8ec49e9a44cca088df057d987f5feaf066d37458e41c4a7d9447977352cf27ea9fee03f6ec4441049cea1c6bb9b6; __remember_me=true',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            ),
-            'tencent'=>array(
-                'referer'   => 'https://y.qq.com/portal/player.html',
-                'cookie'    => 'pgv_pvi=22038528; pgv_si=s3156287488; pgv_pvid=5535248600; yplayer_open=1; ts_last=y.qq.com/portal/player.html; ts_uid=4847550686; yq_index=0; qqmusic_fromtag=66; player_exist=1',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            ),
-            'xiami'=>array(
-                'referer'   => 'http://h.xiami.com/',
-                'cookie'    => 'user_from=2;XMPLAYER_addSongsToggler=0;XMPLAYER_isOpen=0;_xiamitoken=123456789;',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            ),
-            'kugou'=>array(
-                'referer'   => 'http://www.kugou.com/webkugouplayer/flash/webKugou.swf',
-                'cookie'    => '_WCMID=123456789',
-                'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            ),
-            'baidu'=>array(
-                'referer'   => 'http://ting.baidu.com/',
-                'cookie'    => 'BAIDUID=123456789',
-                'useragent' => 'ios_5.9.12',
-            ),
-        );
-        return $BASE[$this->_SITE];
+        switch ($this->_SITE) {
+            case 'netease':
+                return array(
+                    'referer'   => 'https://music.163.com/',
+                    'cookie'    => 'os=linux; appver=1.0.0.1026; osver=Ubuntu%2016.10; MUSIC_U=' . $this->getRandomHex(112) . '; __remember_me=true',
+                    'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                );
+            case 'tencent':
+                return array(
+                    'referer'   => 'https://y.qq.com/portal/player.html',
+                    'cookie'    => 'pgv_pvi=22038528; pgv_si=s3156287488; pgv_pvid=5535248600; yplayer_open=1; ts_last=y.qq.com/portal/player.html; ts_uid=4847550686; yq_index=0; qqmusic_fromtag=66; player_exist=1',
+                    'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                );
+            case 'xiami':
+                return array(
+                    'referer'   => 'http://h.xiami.com/',
+                    'cookie'    => 'user_from=2;XMPLAYER_addSongsToggler=0;XMPLAYER_isOpen=0;_xiamitoken=123456789' . $this->getRandomHex(32) . ';',
+                    'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                );
+            case 'kugou':
+                return array(
+                    'referer'   => 'http://www.kugou.com/webkugouplayer/flash/webKugou.swf',
+                    'cookie'    => '_WCMID=123456789',
+                    'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                );
+            case 'baidu':
+                return array(
+                    'referer'   => 'http://ting.baidu.com/',
+                    'cookie'    => 'BAIDUID=123456789',
+                    'useragent' => 'ios_5.9.12',
+                );
+        }
+    }
+
+    private function getRandomHex($length)
+    {
+        $val = '';
+        for( $i=0; $i<$length; $i++ ) {
+           $val .= chr( rand( 65, 90 ) );
+        }
+        return $val;
     }
 
     /**
