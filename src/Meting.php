@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.4.0
+ * Version 1.3.10
  *
  * Copyright 2017, METO Sheel <i@i-meto.com>
  * Released under the MIT license
