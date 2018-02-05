@@ -28,7 +28,7 @@ class TencentTest extends TestCase
     }
 
     public function testUrl(){
-        $api = new Meting('tencnet');
+        $api = new Meting('tencent');
         $data = $api->format(true)->url('001icUif3vTGcO');
         $data = json_decode($data,1);
         $this->assertNotEmpty($data);

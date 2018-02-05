@@ -2,13 +2,15 @@
 <img src="https://user-images.githubusercontent.com/2666735/30165599-36623bea-93a6-11e7-8956-1ddf99ce0e6f.png" alt="Meting">
 </p>
 
-## Meting
-[![Build Status](https://img.shields.io/travis/metowolf/Meting.svg?style=flat-square)](https://travis-ci.org/metowolf/Meting)
-[![Latest Stable Version](https://poser.pugx.org/metowolf/Meting/v/stable?format=flat-square)](https://packagist.org/packages/metowolf/Meting)
-[![Total Downloads](https://poser.pugx.org/metowolf/meting/downloads?format=flat-square)](https://packagist.org/packages/metowolf/meting)
-[![License](https://poser.pugx.org/metowolf/Meting/license?format=flat-square)](https://packagist.org/packages/metowolf/Meting)
+<p align="center">
+<a href="https://i-meto.com"><img alt="Author" src="https://img.shields.io/badge/Author-METO-blue.svg?style=flat-square"/></a>
+<a href="https://packagist.org/packages/metowolf/Meting"><img alt="Version" src="https://poser.pugx.org/metowolf/Meting/v/stable?format=flat-square"/></a>
+<a href="https://packagist.org/packages/metowolf/meting/stats"><img alt="Downloads" src="https://poser.pugx.org/metowolf/meting/downloads?format=flat-square"/></a>
+<a href="https://travis-ci.org/metowolf/Meting"><img alt="Travis" src="https://img.shields.io/travis/metowolf/Meting.svg?style=flat-square"></a>
+<img alt="License" src="https://poser.pugx.org/metowolf/Meting/license?format=flat-square"/>
+</p>
 
- > :lollipop:Wow, such a powerful music API framework
+ > :cake: Wow, such a powerful music API framework
 
 ## Introduction
 A powerful music API framework to accelerate development
@@ -55,7 +57,10 @@ $api = new Meting('netease');
 $api->cookie('paste your cookie');
 
 // Get data
-$data = $api->format(true)->search('Soldier');
+$data = $api->format(true)->search('Soldier', [
+    'page' => 1,
+    'limit' => 50
+]);
 
 // Enjoy
 echo $data;
