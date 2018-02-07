@@ -71,7 +71,7 @@ class Meting
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $API['url']);
         curl_setopt($curl, CURLOPT_COOKIE, isset($this->_TEMP['cookie'])?$this->_TEMP['cookie']:$BASE['cookie']);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Accept: */*',
             'Accept-Encoding: gzip, deflate',
             'Accept-Language: zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
@@ -79,7 +79,7 @@ class Meting
             'Content-Type: application/x-www-form-urlencoded',
             'Referer: ' . $BASE['referer'],
             'User-Agent: ' . $BASE['useragent']
-        ]);
+        ));
         for ($i=0;$i<=$this->_RETRY;$i++) {
             $data = curl_exec($curl);
             $info = curl_getinfo($curl);
