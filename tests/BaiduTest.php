@@ -15,9 +15,9 @@ class BaiduTest extends TestCase
 
     public function testSong(){
         $api = new Meting('baidu');
-        $data = $api->format(true)->song('14672450');
+        $data = $api->format(true)->song('544169425');
         $data = json_decode($data,1);
-        $this->assertNotEmpty($data);
+        $this->assertEquals('Hello',$data[0]['name']);
     }
 
     // public function testPic(){
@@ -29,14 +29,14 @@ class BaiduTest extends TestCase
 
     public function testUrl(){
         $api = new Meting('baidu');
-        $data = $api->format(true)->url('14672450');
+        $data = $api->format(true)->url('544169425');
         $data = json_decode($data,1);
         $this->assertNotEmpty($data);
     }
 
     public function testLyric(){
         $api = new Meting('baidu');
-        $data = $api->format(true)->lyric('14672450');
+        $data = $api->format(true)->lyric('544169425');
         $data = json_decode($data,1);
         $this->assertNotEmpty($data);
     }
