@@ -1,13 +1,13 @@
 <?php
 /**
- * Meting music framework
- * https://i-meto.com
- * https://github.com/metowolf/Meting
- * Version 1.4.0
- *
- * Copyright 2018, METO Sheel <i@i-meto.com>
- * Released under the MIT license
- */
+* Meting music framework
+* https://i-meto.com
+* https://github.com/metowolf/Meting
+* Version 1.4.1
+*
+* Copyright 2018, METO Sheel <i@i-meto.com>
+* Released under the MIT license
+*/
 
 namespace Metowolf;
 
@@ -32,9 +32,7 @@ class Meting
 
     public function cookie($v = '')
     {
-        if (!empty($v)) {
-            $this->_TEMP['cookie'] = $v;
-        }
+        $this->_TEMP['cookie'] = $v;
         return $this;
     }
 
@@ -209,20 +207,16 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
+                    'from'      => 'qianqianmini',
                     'method'    => 'baidu.ting.search.merge',
                     'isNew'     => 1,
-                    'query'     => $keyword,
-                    'page_size' => isset($option['limit']) ? $option['limit'] : 30,
+                    'platform'  => 'darwin',
                     'page_no'   => isset($option['page']) ? $option['page'] : 1,
-                    'type'      => isset($option['type']) ? $option['type'] : 0,
-                    'format'    => 'json',
-                    'from'      => 'ios',
-                    'channel'   => '(null)',
-                    'cuid'      => 'appstore',
-                    'from'      => 'ios',
-                    'version'   => '5.9.12',
+                    'query'     => $keyword,
+                    'version'   => '11.0.2',
+                    'page_size' => isset($option['limit']) ? $option['limit'] : 30
                 ),
                 'format' => 'result#song_info#song_list',
             );
@@ -290,17 +284,16 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'  => 'baidu.ting.song.play',
-                    'songid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.12',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.song.getInfos',
+                    'songid'    => $id,
+                    'res'       => 1,
+                    'platform'  => 'darwin',
+                    'version'   => '1.0.0'
                 ),
+                'encode' => 'baidu_AESCBC',
                 'format' => 'songinfo',
             );
             break;
@@ -374,16 +367,13 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'   => 'baidu.ting.album.getAlbumInfo',
-                    'album_id' => $id,
-                    'format'   => 'json',
-                    'from'     => 'ios',
-                    'channel'  => '(null)',
-                    'cuid'     => 'appstore',
-                    'from'     => 'ios',
-                    'version'  => '5.9.12',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.album.getAlbumInfo',
+                    'album_id'  => $id,
+                    'platform'  => 'darwin',
+                    'version'   => '11.0.2'
                 ),
                 'format' => 'songlist',
             );
@@ -461,17 +451,16 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'  => 'baidu.ting.artist.getSongList',
-                    'tinguid' => $id,
-                    'limits'  => $limit,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.12',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.artist.getSongList',
+                    'artistid'  => $id,
+                    'limits'    => 20,
+                    'platform'  => 'darwin',
+                    'offset'    => 0,
+                    'tinguid'   => 0,
+                    'version'   => '11.0.2'
                 ),
                 'format' => 'songlist',
             );
@@ -544,16 +533,13 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'  => 'baidu.ting.diy.gedanInfo',
-                    'listid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.12',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.diy.gedanInfo',
+                    'listid'    => $id,
+                    'platform'  => 'darwin',
+                    'version'   => '11.0.2'
                 ),
                 'format' => 'content',
             );
@@ -630,12 +616,16 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'http://music.baidu.com/data/music/fmlink',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'songIds' => $id,
-                    'rate'    => $br,
-                    'type'    => 'mp3',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.song.getInfos',
+                    'songid'    => $id,
+                    'res'       => 1,
+                    'platform'  => 'darwin',
+                    'version'   => '1.0.0'
                 ),
+                'encode' => 'baidu_AESCBC',
                 'decode' => 'baidu_url',
             );
             break;
@@ -706,18 +696,15 @@ class Meting
             case 'baidu':
             $API = array(
                 'method' => 'GET',
-                'url'    => 'https://musicapi.qianqian.com/v1/restserver/ting',
+                'url'    => 'http://tingapi.ting.baidu.com/v1/restserver/ting',
                 'body'   => array(
-                    'method'  => 'baidu.ting.song.lry',
-                    'songid'  => $id,
-                    'format'  => 'json',
-                    'from'    => 'ios',
-                    'channel' => '(null)',
-                    'cuid'    => 'appstore',
-                    'from'    => 'ios',
-                    'version' => '5.9.12',
+                    'from'      => 'qianqianmini',
+                    'method'    => 'baidu.ting.song.lry',
+                    'songid'    => $id,
+                    'platform'  => 'darwin',
+                    'version'   => '1.0.0'
                 ),
-                'decode' => 'baidu_lyric'
+                'decode' => 'baidu_lyric',
             );
             break;
         }
@@ -754,7 +741,7 @@ class Meting
             $data=$this->format(false)->song($id);
             $this->format($format);
             $data=json_decode($data, 1);
-            $url=isset($data['songinfo']['pic_big'])?$data['songinfo']['pic_big']:$data['songinfo']['pic_small'];
+            $url=isset($data['songinfo']['pic_radio'])?$data['songinfo']['pic_radio']:$data['songinfo']['pic_small'];
             break;
         }
         return json_encode(array('url'=>$url));
@@ -766,7 +753,7 @@ class Meting
             case 'netease':
             return array(
                 'referer'   => 'https://music.163.com/',
-                'cookie'    => 'os=linux; deviceId=' . $this->getRandomHex(52) . '; osver=Ubuntu%2016.04.3%20LTS; appver=1.1.0.1232; channel=netease; MUSIC_A=' . $this->getRandomHex(208) . '; __csrf=' . $this->getRandomHex(32),
+                'cookie'    => 'os=linux; deviceId=' . $this->getRandomHex(52) . '; osver=Ubuntu%2016.04.3%20LTS; appver=1.1.0.1232; channel=netease; MUSIC_U=255b19fea4bdec0a0011f855c3708e3e97b229707fccab67d74da902317635b4f866558227e6c3335d9bd72ef1abb9ea77749c2dda21047b; __csrf=' . $this->getRandomHex(32),
                 'useragent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
             );
             case 'tencent':
@@ -789,9 +776,9 @@ class Meting
             );
             case 'baidu':
             return array(
-                'referer'   => 'http://ting.baidu.com/',
-                'cookie'    => 'BAIDUID=' . $this->getRandomHex(32),
-                'useragent' => 'ios_5.9.12',
+                'referer'   => '',
+                'cookie'    => 'BAIDUID=' . $this->getRandomHex(32) . ':FG=1',
+                'useragent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) baidu-music/1.0.2 Chrome/56.0.2924.87 Electron/1.6.11 Safari/537.36',
             );
         }
     }
@@ -824,6 +811,23 @@ class Meting
         $API['body']=array(
             'eparams'=>$body,
         );
+        return $API;
+    }
+    private function baidu_AESCBC($API)
+    {
+        $key = 'DBEECF8C50FD160E';
+        $vi = '1231021386755796';
+
+        $data = 'songid='.$API['body']['songid'].'&ts='.intval(microtime(true)*1000);
+
+        if (function_exists('openssl_encrypt')) {
+            $data = openssl_encrypt($data, 'aes-128-cbc', $key, false, $vi);
+        } else {
+            $PAD = 16-(strlen($data)%16);
+            $data = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_CBC, $vi));
+        }
+
+        $API['body']['e'] = $data;
         return $API;
     }
     private function tencent_singlesong($result)
@@ -992,14 +996,19 @@ class Meting
     }
     private function baidu_url($result)
     {
-        $data=json_decode($result, 1);
-        if (isset($data['data']['songList'][0]['songLink'])) {
-            $url=array(
-                'url' => $data['data']['songList'][0]['songLink'],
-                'br'  => $data['data']['songList'][0]['rate'],
-            );
-            $url['url']=str_replace('http://yinyueshiting.baidu.com', 'https://gss0.bdstatic.com/y0s1hSulBw92lNKgpU_Z2jR7b2w6buu', $url['url']);
-        } else {
+        $data=json_decode($result, true);
+
+        $max=0;
+        $url=array();
+        foreach ($data['songurl']['url'] as $vo) {
+            if ($vo['file_bitrate']<=$this->_TEMP['br']&&$vo['file_bitrate']>$max) {
+                $url=array(
+                    'url' => $vo['file_link'],
+                    'br'  => $vo['file_bitrate'],
+                );
+            }
+        }
+        if (!isset($url['url'])) {
             $url=array(
                 'url' => '',
                 'br'  => -1,

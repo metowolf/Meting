@@ -17,7 +17,7 @@ A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
  + **Light** - 42KB around with only one file.
- + **Powerful** - Suppose various webserver, include netease, tencent, xiami, kugou, baidu and more.
+ + **Powerful** - Suppose various webserver, include tencent, netease, xiami, kugou, baidu and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
 ## Requirement
@@ -35,7 +35,7 @@ Then you can import the class into your application:
 ```php
 use Metowolf\Meting;
 
-$api = new Meting('netease');
+$api = new Meting('tencent');
 
 $data = $api->format(true)->search('Soldier');
 ```
@@ -51,7 +51,7 @@ require 'vendor/autoload.php';
 use Metowolf\Meting;
 
 // Initialize to netease API
-$api = new Meting('netease');
+$api = new Meting('tencent');
 
 // Use custom cookie (option)
 $api->cookie('paste your cookie');
@@ -67,7 +67,8 @@ echo $data;
 ```
 
 ## More usage
- - [wiki/docs](https://github.com/metowolf/Meting/wiki)
+ - [docs](https://github.com/metowolf/Meting/wiki)
+ - [special for netease](https://github.com/metowolf/Meting/wiki/special-for-netease)
 
 ## Join the Discussion
  - [Telegram Group](https://t.me/adplayer)
