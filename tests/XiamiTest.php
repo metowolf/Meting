@@ -1,5 +1,7 @@
 <?php
+
 namespace Metowolf\Meting;
+
 use Metowolf\Meting;
 use PHPUnit\Framework\TestCase;
 
@@ -9,14 +11,15 @@ class XiamiTest extends TestCase
     {
         $api = new Meting('xiami');
         $data = $api->format(true)->search('hello');
-        $data = json_decode($data,1);
+        $data = json_decode($data, 1);
         $this->assertNotEmpty($data);
     }
 
-    public function testSong(){
+    public function testSong()
+    {
         $api = new Meting('xiami');
         $data = $api->format(true)->song('1774998338');
-        $data = json_decode($data,1);
+        $data = json_decode($data, 1);
         $this->assertNotEmpty($data);
     }
 
@@ -27,17 +30,19 @@ class XiamiTest extends TestCase
     //     $this->assertNotEmpty($data);
     // }
 
-    public function testUrl(){
+    public function testUrl()
+    {
         $api = new Meting('xiami');
         $data = $api->format(true)->url('1774998338');
-        $data = json_decode($data,1);
+        $data = json_decode($data, 1);
         $this->assertNotEmpty($data);
     }
 
-    public function testLyric(){
+    public function testLyric()
+    {
         $api = new Meting('xiami');
         $data = $api->format(true)->lyric('1774998338');
-        $data = json_decode($data,1);
+        $data = json_decode($data, 1);
         $this->assertNotEmpty($data);
     }
 }
