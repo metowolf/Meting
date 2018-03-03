@@ -23,6 +23,7 @@
     },
 	"require": {
 		"php": ">=5.4.0",
+		"ext-bcmath": "*",
         "ext-curl": "*",
 		"ext-openssl": "*"
 	},

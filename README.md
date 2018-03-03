@@ -4,10 +4,10 @@
 
 <p align="center">
 <a href="https://i-meto.com"><img alt="Author" src="https://img.shields.io/badge/Author-METO-blue.svg?style=flat-square"/></a>
-<a href="https://packagist.org/packages/metowolf/Meting"><img alt="Version" src="https://poser.pugx.org/metowolf/Meting/v/stable?format=flat-square"/></a>
-<a href="https://packagist.org/packages/metowolf/meting/stats"><img alt="Downloads" src="https://poser.pugx.org/metowolf/meting/downloads?format=flat-square"/></a>
+<a href="https://packagist.org/packages/metowolf/Meting"><img alt="Version" src="https://img.shields.io/packagist/v/metowolf/Meting.svg?style=flat-square"/></a>
+<a href="https://packagist.org/packages/metowolf/meting/stats"><img alt="Downloads" src="https://img.shields.io/packagist/dt/metowolf/Meting.svg?style=flat-square"/></a>
 <a href="https://travis-ci.org/metowolf/Meting"><img alt="Travis" src="https://img.shields.io/travis/metowolf/Meting.svg?style=flat-square"></a>
-<img alt="License" src="https://poser.pugx.org/metowolf/Meting/license?format=flat-square"/>
+<img alt="License" src="https://img.shields.io/packagist/l/metowolf/Meting.svg?style=flat-square"/>
 </p>
 
  > :cake: Wow, such a powerful music API framework
@@ -21,7 +21,7 @@ A powerful music API framework to accelerate development
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
 ## Requirement
-PHP 5.4+ and Curl, OpenSSL extension installed
+PHP 5.4+ and BCMath, Curl, OpenSSL extension installed
 
 ## Install
 Require this package, with [Composer](https://getcomposer.org), in the root directory of your project.
@@ -40,7 +40,7 @@ $api = new Meting('tencent');
 $data = $api->format(true)->search('Soldier');
 ```
 
-> **Note:** Meting requires the [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
+> **Note:** Meting requires the [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
 
 
 ## Quick Start
@@ -54,7 +54,7 @@ use Metowolf\Meting;
 $api = new Meting('tencent');
 
 // Use custom cookie (option)
-$api->cookie('paste your cookie');
+// $api->cookie('paste your cookie');
 
 // Get data
 $data = $api->format(true)->search('Soldier', [
