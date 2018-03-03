@@ -1,0 +1,49 @@
+// $api->site('netease');
+// $data = $api->format(true)->search('hello');
+// $data = $api->format(true)->song('35847388');
+// $data = $api->format(true)->album('35501199');
+// $data = $api->format(true)->playlist('436843836');
+// $data = $api->format(true)->artist('3681');
+// $data = $api->format(true)->pic('1407374890649284');
+// $data = $api->format(true)->url('35847388');
+// $data = $api->format(true)->lyric('35847388');
+
+// $api->site('tencent');
+// $data = $api->format(true)->search('hello');
+// $data = $api->format(true)->song('000jDQWP4JiB3y');
+// $data = $api->format(true)->album('003rytri2FHG3V');
+// $data = $api->format(true)->playlist('1144188779');
+// $data = $api->format(true)->artist('003Nz2So3XXYek');
+// $data = $api->format(true)->pic('002rBshp4WPAut');
+// $data = $api->format(true)->url('001icUif3vTGcO', 24);
+// $data = $api->format(true)->lyric('001icUif3vTGcO');
+
+// $api->site('xiami');
+// $data = $api->format(true)->search('hello');
+// $data = $api->format(true)->song('1774998338');
+// $data = $api->format(true)->album('2100226190');
+// $data = $api->format(true)->playlist('277809522');
+// $data = $api->format(true)->artist('23485');
+// $data = $api->format(true)->pic('1774998338');
+// $data = $api->format(true)->url('1774998338');
+// $data = $api->format(true)->lyric('1774998338');
+
+// $api->site('kugou');
+// $data = $api->format(true)->search('hello');
+// $data = $api->format(true)->song('9ed11b0c5a86f33541fa88b57c5ba00a');
+// $data = $api->format(true)->album('1645030');
+// $data = $api->format(true)->playlist('119859');
+// $data = $api->format(true)->artist('3520');
+// $data = $api->format(true)->pic('9ed11b0c5a86f33541fa88b57c5ba00a');
+// $data = $api->format(true)->url('9ed11b0c5a86f33541fa88b57c5ba00a');
+// $data = $api->format(true)->lyric('9ed11b0c5a86f33541fa88b57c5ba00a');
+
+// $api->site('baidu');
+// $data = $api->format(true)->search('陈奕迅');
+// $data = $api->format(true)->song('578055564');
+// $data = $api->format(true)->album('541223882');
+// $data = $api->format(true)->playlist('364201689');
+// $data = $api->format(true)->artist('362');
+// $data = $api->format(true)->pic('578055564');
+// $data = $api->format(true)->url('578055564');
+// $data = $api->format(true)->lyric('578055564');
