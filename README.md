@@ -50,7 +50,7 @@ require 'vendor/autoload.php';
 
 use Metowolf\Meting;
 
-// Initialize to netease API
+// Initialize to tencent API
 $api = new Meting('tencent');
 
 // Use custom cookie (option)
@@ -62,8 +62,14 @@ $data = $api->format(true)->search('Soldier', [
     'limit' => 50
 ]);
 
-// Enjoy
 echo $data;
+// [{"id":"0036bJCO3iRu9h","name":"Soldier","artist":["Samantha Jade"],"album":"Soldier","pic_id":"004GeOXp2mmIV7","url_id":"0036bJCO3iRu9h","lyric_id":"0036bJCO3iRu9h","source":"tencent"},{...},{...},...]
+
+// Parse link
+$data = $api->format(true)->url();
+
+echo $data;
+// {"url":"https://...","size":11823019,"br":320}
 ```
 
 ## More usage
