@@ -91,7 +91,9 @@ class Meting
 
     private function curl($url, $payload = null, $headerOnly = 0)
     {
-        $header = array_map(function($k, $v){return $k.': '.$v;}, array_keys($this->header), $this->header);
+        $header = array_map(function ($k, $v) {
+            return $k.': '.$v;
+        }, array_keys($this->header), $this->header);
         $curl = curl_init();
         if (!is_null($payload)) {
             curl_setopt($curl, CURLOPT_POST, 1);
