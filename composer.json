@@ -23,9 +23,12 @@
     },
 	"require": {
 		"php": ">=5.4.0",
-		"ext-bcmath": "*",
         "ext-curl": "*",
 		"ext-openssl": "*"
+	},
+	"suggest": {
+		"ext-bcmath": "Required to use BC Math calculate RSA.",
+		"ext-openssl": "Required to use OpenSSL encrypt params."
 	},
 	"autoload": {
         "psr-4": {

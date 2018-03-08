@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.5.1.
+ * Version 1.5.2.
  *
  * Copyright 2018, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -13,7 +13,7 @@ namespace Metowolf;
 
 class Meting
 {
-    const VERSION = '1.5.1';
+    const VERSION = '1.5.2';
 
     public $raw;
     public $data;
@@ -849,17 +849,34 @@ class Meting
         $pubkey = '65537';
         $nonce = '0CoJUm6Qyw8W8jud';
         $vi = '0102030405060708';
-        $skey = $this->getRandomHex(16);
+
+        if (extension_loaded('bcmath')) {
+            $skey = $this->getRandomHex(16);
+        } else {
+            $skey = 'B3v3kH4vRPWRJFfH';
+        }
 
         $body = json_encode($api['body']);
-        $body = openssl_encrypt($body, 'aes-128-cbc', $nonce, false, $vi);
-        $body = openssl_encrypt($body, 'aes-128-cbc', $skey, false, $vi);
 
-        $skey = strrev(utf8_encode($skey));
-        $skey = $this->bchexdec($this->str2hex($skey));
-        $skey = bcpowmod($skey, $pubkey, $modulus);
-        $skey = $this->bcdechex($skey);
-        $skey = str_pad($skey, 256, '0', STR_PAD_LEFT);
+        if (function_exists('openssl_encrypt')) {
+            $body = openssl_encrypt($body, 'aes-128-cbc', $nonce, false, $vi);
+            $body = openssl_encrypt($body, 'aes-128-cbc', $skey, false, $vi);
+        } else {
+            $pad = 16 - (strlen($body) % 16);
+            $body = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $nonce, $body.str_repeat(chr($pad), $pad), MCRYPT_MODE_CBC, $vi));
+            $pad = 16 - (strlen($body) % 16);
+            $body = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $skey, $body.str_repeat(chr($pad), $pad), MCRYPT_MODE_CBC, $vi));
+        }
+
+        if (extension_loaded('bcmath')) {
+            $skey = strrev(utf8_encode($skey));
+            $skey = $this->bchexdec($this->str2hex($skey));
+            $skey = bcpowmod($skey, $pubkey, $modulus);
+            $skey = $this->bcdechex($skey);
+            $skey = str_pad($skey, 256, '0', STR_PAD_LEFT);
+        } else {
+            $skey = '85302b818aea19b68db899c25dac229412d9bba9b3fcfe4f714dc016bc1686fc446a08844b1f8327fd9cb623cc189be00c5a365ac835e93d4858ee66f43fdc59e32aaed3ef24f0675d70172ef688d376a4807228c55583fe5bac647d10ecef15220feef61477c28cae8406f6f9896ed329d6db9f88757e31848a6c2ce2f94308';
+        }
 
         $api['url'] = str_replace('/api/', '/weapi/', $api['url']);
         $api['body'] = array(
@@ -880,8 +897,8 @@ class Meting
         if (function_exists('openssl_encrypt')) {
             $data = openssl_encrypt($data, 'aes-128-cbc', $key, false, $vi);
         } else {
-            $PAD = 16 - (strlen($data) % 16);
-            $data = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data.str_repeat(chr($PAD), $PAD), MCRYPT_MODE_CBC, $vi));
+            $pad = 16 - (strlen($data) % 16);
+            $data = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data.str_repeat(chr($pad), $pad), MCRYPT_MODE_CBC, $vi));
         }
 
         $api['body']['e'] = $data;
