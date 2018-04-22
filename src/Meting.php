@@ -139,13 +139,19 @@ class Meting
     {
         $raw = json_decode($raw, true);
         if (!empty($rule)) {
-            $raw = $this->pickup($raw, $rule);
+            foreach (explode(':', $rule) as $i => $r) {
+                if ($i == 0) {
+                    $raws = $this->pickup($raw, $r);
+                } else {
+                    $result[$r] = $this->pickup($raw, $r);
+                }
+            }
+            
         }
-        if (!isset($raw[0]) && count($raw)) {
-            $raw = array($raw);
+        if (!isset($raws[0]) && count($raws)) {
+            $raws = array($raws);
         }
-        $result = array_map(array($this, 'format_'.$this->server), $raw);
-
+        $result['songs'] = array_map(array($this, 'format_'.$this->server), $raws);
         return json_encode($result);
     }
 
@@ -359,7 +365,7 @@ class Meting
                     'r' => 'mtop.alimusic.music.albumservice.getalbumdetail',
                 ),
                 'encode' => 'xiami_sign',
-                'format' => 'data.data.albumDetail.songs',
+                'format' => 'data.data.albumDetail.songs', //data.data.albumDetail.songs:data.data.albumDetail.description
             );
             break;
             case 'kugou':
