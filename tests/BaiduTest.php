@@ -5,11 +5,11 @@ namespace Metowolf\Meting;
 use Metowolf\Meting;
 use PHPUnit\Framework\TestCase;
 
-class TencentTest extends TestCase
+class BaiduTest extends TestCase
 {
     public function testSearch()
     {
-        $api = new Meting('tencent');
+        $api = new Meting('baidu');
         $data = $api->format(true)->search('hello', [
             'limit' => 10,
         ]);
@@ -19,33 +19,33 @@ class TencentTest extends TestCase
 
     public function testSong()
     {
-        $api = new Meting('tencent');
-        $data = $api->format(true)->song('000bdxcy3ta8Q3');
+        $api = new Meting('baidu');
+        $data = $api->format(true)->song('578055564');
         $data = json_decode($data, true);
-        $this->assertEquals($data[0]['id'], '000bdxcy3ta8Q3');
+        $this->assertEquals($data[0]['id'], 578055564);
     }
 
     public function testPic()
     {
-        $api = new Meting('tencent');
-        $data = $api->format(true)->pic('000bdxcy3ta8Q3');
+        $api = new Meting('baidu');
+        $data = $api->format(true)->pic('578055564');
         $data = json_decode($data, true);
-        $pic = 'https://y.gtimg.cn/music/photo_new/T002R300x300M000000bdxcy3ta8Q3.jpg?max_age=2592000';
+        $pic = 'http://qukufile2.qianqian.com/data2/pic/a7e5421338fb4e3a0c0fd102a6dbed6b/578053624/578053624.jpg@s_1,w_300,h_300';
         $this->assertEquals($pic, $data['url']);
     }
 
     public function testUrl()
     {
-        $api = new Meting('tencent');
-        $data = $api->format(true)->url('000bdxcy3ta8Q3');
+        $api = new Meting('baidu');
+        $data = $api->format(false)->url('578055564');
         $data = json_decode($data, true);
-        $this->assertNotEmpty($data['url']);
+        $this->assertNotEmpty($data['songurl']['url']);
     }
 
     public function testLyric()
     {
-        $api = new Meting('tencent');
-        $data = $api->format(true)->lyric('000bdxcy3ta8Q3');
+        $api = new Meting('baidu');
+        $data = $api->format(true)->lyric('578055564');
         $data = json_decode($data, true);
         $this->assertNotEmpty($data);
     }

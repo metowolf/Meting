@@ -16,7 +16,7 @@
 A powerful music API framework to accelerate development
 
  + **Easy** - Easy to use, suppose format return.
- + **Light** - 42KB around with only one file.
+ + **Light** - 46KB around with only one file.
  + **Powerful** - Suppose various webserver, include tencent, netease, xiami, kugou, baidu and more.
  + **Free** - Under MIT license, you can use it anywhere if you want.
 
@@ -35,7 +35,7 @@ Then you can import the class into your application:
 ```php
 use Metowolf\Meting;
 
-$api = new Meting('tencent');
+$api = new Meting('netease');
 
 $data = $api->format(true)->search('Soldier');
 ```
@@ -50,8 +50,8 @@ require 'vendor/autoload.php';
 
 use Metowolf\Meting;
 
-// Initialize to tencent API
-$api = new Meting('tencent');
+// Initialize to netease API
+$api = new Meting('netease');
 
 // Use custom cookie (option)
 // $api->cookie('paste your cookie');
@@ -63,13 +63,13 @@ $data = $api->format(true)->search('Soldier', [
 ]);
 
 echo $data;
-// [{"id":"0036bJCO3iRu9h","name":"Soldier","artist":["Samantha Jade"],"album":"Soldier","pic_id":"004GeOXp2mmIV7","url_id":"0036bJCO3iRu9h","lyric_id":"0036bJCO3iRu9h","source":"tencent"},{...},{...},...]
+// [{"id":35847388,"name":"Hello","artist":["Adele"],"album":"Hello","pic_id":"1407374890649284","url_id":35847388,"lyric_id":35847388,"source":"netease"},{"id":33211676,"name":"Hello","artist":["OMFG"],"album":"Hello",...
 
 // Parse link
-$data = $api->format(true)->url();
+$data = $api->format(true)->url(35847388);
 
 echo $data;
-// {"url":"https://...","size":11823019,"br":320}
+// {"url":"http:\/\/...","size":4729252,"br":128}
 ```
 
 ## More usage
