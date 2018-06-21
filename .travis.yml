@@ -16,10 +16,7 @@ matrix:
 sudo: false
 
 before_install:
-  - wget https://phar.phpunit.de/phpunit-5.7.phar
-
-install:
-  - travis_retry composer install --no-interaction
+  - composer install --dev -n --prefer-source
 
 script:
-  - php phpunit-5.7.phar
+  - vendor/bin/phpunit -c phpunit.xml.dist

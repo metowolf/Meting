@@ -10,9 +10,9 @@ class TencentTest extends TestCase
     public function testSearch()
     {
         $api = new Meting('tencent');
-        $data = $api->format(true)->search('hello', [
+        $data = $api->format(true)->search('hello', array(
             'limit' => 10,
-        ]);
+        ));
         $data = json_decode($data, true);
         $this->assertCount(10, $data);
     }

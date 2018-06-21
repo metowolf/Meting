@@ -595,9 +595,9 @@ class Meting
                 'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.songservice.getsongs/1.0/',
                 'body'   => array(
                     'data' => array(
-                        'songIds' => [
+                        'songIds' => array(
                             $id,
-                        ],
+                        ),
                     ),
                     'r' => 'mtop.alimusic.music.songservice.getsongs',
                 ),
@@ -813,7 +813,15 @@ class Meting
 
     private function getRandomHex($length)
     {
-        return bin2hex(random_bytes($length / 2));
+        if (function_exists('random_bytes')) {
+            return bin2hex(random_bytes($length / 2));
+        }
+        if (function_exists('mcrypt_create_iv')) {
+            return bin2hex(mcrypt_create_iv($length / 2, MCRYPT_DEV_URANDOM));
+        }
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            return bin2hex(openssl_random_pseudo_bytes($length / 2));
+        }
     }
 
     private function bchexdec($hex)

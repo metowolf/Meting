@@ -26,6 +26,9 @@
         "ext-curl": "*",
 		"ext-openssl": "*"
 	},
+	"require-dev": {
+        "phpunit/phpunit": "^5.0"
+    },
 	"suggest": {
 		"ext-bcmath": "Required to use BC Math calculate RSA.",
 		"ext-openssl": "Required to use OpenSSL encrypt params."
