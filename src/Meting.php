@@ -3,17 +3,17 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.5.3.
+ * Version 1.5.4.
  *
  * Copyright 2018, METO Sheel <i@i-meto.com>
  * Released under the MIT license
  */
 
-namespace Metowolf;
+namespace app\music\event;
 
 class Meting
 {
-    const VERSION = '1.5.3';
+    const VERSION = '1.5.4';
 
     public $raw;
     public $data;
@@ -22,6 +22,7 @@ class Meting
     public $status;
 
     public $server;
+    public $proxy = NULL;
     public $format = false;
     public $header;
 
@@ -49,6 +50,13 @@ class Meting
     public function format($value = true)
     {
         $this->format = $value;
+
+        return $this;
+    }
+
+    public function proxy($value)
+    {
+        $this->proxy = $value;
 
         return $this;
     }
@@ -102,6 +110,7 @@ class Meting
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        if ($this->proxy) curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
         for ($i = 0; $i < 3; $i++) {
             $this->raw = curl_exec($curl);
             $this->info = curl_getinfo($curl);
