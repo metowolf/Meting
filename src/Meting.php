@@ -22,7 +22,7 @@ class Meting
     public $status;
 
     public $server;
-    public $proxy = NULL;
+    public $proxy = null;
     public $format = false;
     public $header;
 
@@ -110,7 +110,9 @@ class Meting
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        if ($this->proxy) curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+        if ($this->proxy){
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+        }
         for ($i = 0; $i < 3; $i++) {
             $this->raw = curl_exec($curl);
             $this->info = curl_getinfo($curl);
