@@ -9,7 +9,7 @@
  * Released under the MIT license
  */
 
-namespace app\music\event;
+namespace Metowolf;
 
 class Meting
 {
@@ -111,7 +111,7 @@ class Meting
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         if ($this->proxy) {
-            curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
         }
         for ($i = 0; $i < 3; $i++) {
             $this->raw = curl_exec($curl);
