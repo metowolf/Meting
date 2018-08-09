@@ -110,7 +110,7 @@ class Meting
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        if ($this->proxy){
+        if ($this->proxy) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
         }
         for ($i = 0; $i < 3; $i++) {
