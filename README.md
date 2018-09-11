@@ -15,15 +15,15 @@
 ## Introduction
 A powerful music API framework to accelerate development
 
- + **Easy** - Easy to use, suppose format return.
- + **Light** - 46KB around with only one file.
- + **Powerful** - Suppose various webserver, include tencent, netease, xiami, kugou, baidu and more.
- + **Free** - Under MIT license, you can use it anywhere if you want.
+ + **Easy** - Easy to use, support format return.
+ + **Light** - A single-file library that's less than 46KB.
+ + **Powerful** - Support various service providers, including tencent, netease, xiami, kugou, baidu and more.
+ + **Free** - Under MIT license, you can use it anywhere you want.
 
 ## Requirement
-PHP 5.4+ and BCMath, Curl, OpenSSL extension installed
+PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
 
-## Install
+## Installation
 Require this package, with [Composer](https://getcomposer.org), in the root directory of your project.
 
 ```bash
@@ -40,7 +40,7 @@ $api = new Meting('netease');
 $data = $api->format(true)->search('Soldier');
 ```
 
-> **Note:** Meting requires the [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
+> **Note:** Meting requires [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
 
 
 ## Quick Start
