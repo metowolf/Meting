@@ -13,12 +13,11 @@
  > :cake: Wow, such a powerful music API framework
 
 ## Introduction
-A powerful music API framework to accelerate development
-
- + **Easy** - Easy to use, support format return.
- + **Light** - A single-file library that's less than 46KB.
- + **Powerful** - Support various service providers, including tencent, netease, xiami, kugou, baidu and more.
- + **Free** - Under MIT license, you can use it anywhere you want.
+A powerful music API framework to accelerate your development
+ + **Elegant** - Easy to use, a standardized format for all music platforms.
+ + **Lightweight** - A single-file library that's less than 46KB.
+ + **Powerful** - Support various music platforms, including Tencent, NetEase, Xiami, KuGou, Baidu and more.
+ + **Free** - Under MIT license, need I say more?
 
 ## Requirement
 PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
