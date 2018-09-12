@@ -13,17 +13,16 @@
  > :cake: Wow, such a powerful music API framework
 
 ## Introduction
-A powerful music API framework to accelerate development
-
- + **Easy** - Easy to use, suppose format return.
- + **Light** - 46KB around with only one file.
- + **Powerful** - Suppose various webserver, include tencent, netease, xiami, kugou, baidu and more.
- + **Free** - Under MIT license, you can use it anywhere if you want.
+A powerful music API framework to accelerate your development
+ + **Elegant** - Easy to use, a standardized format for all music platforms.
+ + **Lightweight** - A single-file library that's less than 46KB.
+ + **Powerful** - Support various music platforms, including Tencent, NetEase, Xiami, KuGou, Baidu and more.
+ + **Free** - Under MIT license, need I say more?
 
 ## Requirement
-PHP 5.4+ and BCMath, Curl, OpenSSL extension installed
+PHP 5.4+ and BCMath, Curl, OpenSSL extension installed.
 
-## Install
+## Installation
 Require this package, with [Composer](https://getcomposer.org), in the root directory of your project.
 
 ```bash
@@ -40,7 +39,7 @@ $api = new Meting('netease');
 $data = $api->format(true)->search('Soldier');
 ```
 
-> **Note:** Meting requires the [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
+> **Note:** Meting requires [BCMath](http://php.net/manual/en/book.bc.php), [cURL](http://php.net/manual/en/book.curl.php) and [OpenSSL](http://php.net/manual/en/book.openssl.php) extension in order to work.
 
 
 ## Quick Start
