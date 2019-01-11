@@ -1016,26 +1016,26 @@ class Meting
             array('size_24aac', 24, 'C100', 'm4a'),
         );
 
-        $payload = [
-          'req_0' => [
-            'module' => 'vkey.GetVkeyServer',
-            'method' => 'CgiGetVkey',
-            'param'  => [
-              'guid' => (string) $guid,
-              'songmid' => [],
-              'filename' => [],
-              'songtype' => [],
-              'uin' => '0',
-              'loginflag' => 1,
-              'platform' => '20',
-            ],
-          ],
-        ];
+        $payload = array(
+            'req_0' => array(
+                'module' => 'vkey.GetVkeyServer',
+                'method' => 'CgiGetVkey',
+                'param'  => array(
+                    'guid' => (string) $guid,
+                    'songmid' => array(),
+                    'filename' => array(),
+                    'songtype' => array(),
+                    'uin' => '0',
+                    'loginflag' => 1,
+                    'platform' => '20',
+                ),
+            ),
+        );
 
         foreach ($type as $vo) {
-          $payload['req_0']['param']['songmid'][] = $data['data'][0]['mid'];
-          $payload['req_0']['param']['filename'][] = $vo[2].$data['data'][0]['file']['media_mid'].'.'.$vo[3];
-          $payload['req_0']['param']['songtype'][] = $data['data'][0]['type'];
+            $payload['req_0']['param']['songmid'][] = $data['data'][0]['mid'];
+            $payload['req_0']['param']['filename'][] = $vo[2].$data['data'][0]['file']['media_mid'].'.'.$vo[3];
+            $payload['req_0']['param']['songtype'][] = $data['data'][0]['type'];
         }
 
         $api = array(
