@@ -3,9 +3,9 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.5.4.
+ * Version 1.5.6.
  *
- * Copyright 2018, METO Sheel <i@i-meto.com>
+ * Copyright 2019, METO Sheel <i@i-meto.com>
  * Released under the MIT license
  */
 
@@ -13,7 +13,7 @@ namespace Metowolf;
 
 class Meting
 {
-    const VERSION = '1.5.5';
+    const VERSION = '1.5.6';
 
     public $raw;
     public $data;
@@ -1006,34 +1006,61 @@ class Meting
     {
         $data = json_decode($result, true);
         $guid = mt_rand() % 10000000000;
-        $api = array(
-            'method' => 'GET',
-            'url'    => 'https://c.y.qq.com/base/fcgi-bin/fcg_musicexpress.fcg',
-            'body'   => array(
-                'json'   => 3,
-                'guid'   => $guid,
-                'format' => 'json',
-            ),
-        );
-        $key = json_decode($this->exec($api), true);
-        $key = $key['key'];
 
         $type = array(
-            'size_320mp3' => array(320, 'M800', 'mp3'),
-            'size_192aac' => array(192, 'C600', 'm4a'),
-            'size_128mp3' => array(128, 'M500', 'mp3'),
-            'size_96aac'  => array(96, 'C400', 'm4a'),
-            'size_48aac'  => array(48, 'C200', 'm4a'),
-            'size_24aac'  => array(24, 'C100', 'm4a'),
+            array('size_320mp3', 320, 'M800', 'mp3'),
+            array('size_192aac', 192, 'C600', 'm4a'),
+            array('size_128mp3', 128, 'M500', 'mp3'),
+            array('size_96aac', 96, 'C400', 'm4a'),
+            array('size_48aac', 48, 'C200', 'm4a'),
+            array('size_24aac', 24, 'C100', 'm4a'),
         );
+
+        $payload = [
+          'req_0' => [
+            'module' => 'vkey.GetVkeyServer',
+            'method' => 'CgiGetVkey',
+            'param'  => [
+              'guid' => (string) $guid,
+              'songmid' => [],
+              'filename' => [],
+              'songtype' => [],
+              'uin' => '0',
+              'loginflag' => 1,
+              'platform' => '20',
+            ],
+          ],
+        ];
+
+        foreach ($type as $vo) {
+          $payload['req_0']['param']['songmid'][] = $data['data'][0]['mid'];
+          $payload['req_0']['param']['filename'][] = $vo[2].$data['data'][0]['file']['media_mid'].'.'.$vo[3];
+          $payload['req_0']['param']['songtype'][] = $data['data'][0]['type'];
+        }
+
+        $api = array(
+            'method' => 'GET',
+            'url'    => 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+            'body'   => array(
+                'format'      => 'json',
+                'platform'    => 'yqq.json',
+                'needNewCode' => 0,
+                'data'        => json_encode($payload),
+            ),
+        );
+        $response = json_decode($this->exec($api), true);
+        $vkeys = $response['req_0']['data']['midurlinfo'];
+
         foreach ($type as $index => $vo) {
-            if ($data['data'][0]['file'][$index] && $vo[0] <= $this->temp['br']) {
-                $url = array(
-                    'url'  => 'https://dl.stream.qqmusic.qq.com/'.$vo[1].$data['data'][0]['file']['media_mid'].'.'.$vo[2].'?vkey='.$key.'&guid='.$guid.'&uid=0&fromtag=30',
-                    'size' => $data['data'][0]['file'][$index],
-                    'br'   => $vo[0],
-                );
-                break;
+            if ($data['data'][0]['file'][$vo[0]] && $vo[1] <= $this->temp['br']) {
+                if (!empty($vkeys[$index]['vkey'])) {
+                    $url = array(
+                        'url'  => $response['req_0']['data']['sip'][0].$vkeys[$index]['purl'],
+                        'size' => $data['data'][0]['file'][$vo[0]],
+                        'br'   => $vo[1],
+                    );
+                    break;
+                }
             }
         }
         if (!isset($url['url'])) {
