@@ -3,7 +3,7 @@
  * Meting music framework
  * https://i-meto.com
  * https://github.com/metowolf/Meting
- * Version 1.5.6.
+ * Version 1.5.7.
  *
  * Copyright 2019, METO Sheel <i@i-meto.com>
  * Released under the MIT license
@@ -13,7 +13,7 @@ namespace Metowolf;
 
 class Meting
 {
-    const VERSION = '1.5.6';
+    const VERSION = '1.5.7';
 
     public $raw;
     public $data;
@@ -192,7 +192,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.search.searchservice.searchsongs/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.search.searchservice.searchsongs/1.0/',
                 'body'   => array(
                     'data' => array(
                         'key'      => $keyword,
@@ -278,7 +278,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.songservice.getsongdetail/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.songservice.getsongdetail/1.0/',
                 'body'   => array(
                     'data' => array(
                         'songId' => $id,
@@ -357,7 +357,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.albumservice.getalbumdetail/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.albumservice.getalbumdetail/1.0/',
                 'body'   => array(
                     'data' => array(
                         'albumId' => $id,
@@ -438,7 +438,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.songservice.getartistsongs/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.songservice.getartistsongs/1.0/',
                 'body'   => array(
                     'data' => array(
                         'artistId' => $id,
@@ -523,7 +523,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.list.collectservice.getcollectdetail/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.list.collectservice.getcollectdetail/1.0/',
                 'body'   => array(
                     'data' => array(
                         'listId'     => $id,
@@ -603,7 +603,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.songservice.getsongs/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.songservice.getsongs/1.0/',
                 'body'   => array(
                     'data' => array(
                         'songIds' => array(
@@ -693,7 +693,7 @@ class Meting
             case 'xiami':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://h5api.m.xiami.com/h5/mtop.alimusic.music.lyricservice.getsonglyrics/1.0/',
+                'url'    => 'https://acs.m.xiami.com/h5/mtop.alimusic.music.lyricservice.getsonglyrics/1.0/',
                 'body'   => array(
                     'data' => array(
                         'songId' => $id,
@@ -935,7 +935,7 @@ class Meting
 
     private function xiami_sign($api)
     {
-        $data = $this->curl('http://h5api.m.xiami.com/h5/mtop.alimusic.search.searchservice.searchsongs/1.0/?appKey=12574478&t=1511168684000&dataType=json&data=%7B%22requestStr%22%3A%22%7B%5C%22model%5C%22%3A%7B%5C%22key%5C%22%3A%5C%22Dangerous+Woman%5C%22%2C%5C%22pagingVO%5C%22%3A%7B%5C%22page%5C%22%3A1%2C%5C%22pageSize%5C%22%3A30%7D%7D%7D%22%7D&api=mtop.alimusic.search.searchservice.searchsongs&v=1.0&type=originaljson&sign=f6c99a429e9ef703ea955f7cd113a467', null, 1);
+        $data = $this->curl('https://acs.m.xiami.com/h5/mtop.alimusic.recommend.songservice.getdailysongs/1.0/?appKey=12574478&t=1560663823000&dataType=json&data=%7B%22requestStr%22%3A%22%7B%5C%22header%5C%22%3A%7B%5C%22platformId%5C%22%3A%5C%22mac%5C%22%7D%2C%5C%22model%5C%22%3A%5B%5D%7D%22%7D&api=mtop.alimusic.recommend.songservice.getdailysongs&v=1.0&type=originaljson&sign=22ad1377ee193f3e2772c17c6192b17c', null, 1);
         preg_match_all('/_m_h5[^;]+/', $data->raw, $match);
         $this->header['Cookie'] = $match[0][0].'; '.$match[0][1];
         $data = json_encode(array(
