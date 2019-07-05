@@ -737,7 +737,7 @@ class Meting
         return $this->exec($api);
     }
 
-    public function pic($id, $size = 300)
+    public function pic($id, $size = 300, $cover = '')
     {
         switch ($this->server) {
             case 'netease':
@@ -767,7 +767,11 @@ class Meting
             $data = $this->format(false)->song($id);
             $this->format = $format;
             $data = json_decode($data, true);
-            $url = isset($data['songinfo']['pic_radio']) ? $data['songinfo']['pic_radio'] : $data['songinfo']['pic_small'];
+            if (isset($data['songinfo'])) {
+                $url = isset($data['songinfo']['pic_radio']) ? $data['songinfo']['pic_radio'] : $data['songinfo']['pic_small'];
+            } else {
+                $url = $cover;
+            }
             break;
         }
 
@@ -1156,22 +1160,27 @@ class Meting
 
         $max = 0;
         $url = array();
-        foreach ($data['songurl']['url'] as $vo) {
-            if ($vo['file_bitrate'] <= $this->temp['br'] && $vo['file_bitrate'] > $max) {
+
+        if (isset($data['songurl']['url'])) {
+            foreach ($data['songurl']['url'] as $vo) {
+                if ($vo['file_bitrate'] <= $this->temp['br'] && $vo['file_bitrate'] > $max) {
+                    $url = array(
+                        'url' => $vo['file_link'],
+                        'br' => $vo['file_bitrate'],
+                    );
+                }
+            }
+            if (!isset($url['url'])) {
                 $url = array(
-                    'url' => $vo['file_link'],
-                    'br'  => $vo['file_bitrate'],
+                    'url' => '',
+                    'br' => -1,
                 );
             }
-        }
-        if (!isset($url['url'])) {
-            $url = array(
-                'url' => '',
-                'br'  => -1,
-            );
-        }
 
-        return json_encode($url);
+            return json_encode($url);
+        } else {
+            return json_encode(['url' => '', 'br' => -1,]);
+        }
     }
 
     private function netease_lyric($result)
@@ -1233,23 +1242,31 @@ class Meting
     private function kugou_lyric($result)
     {
         $result = json_decode($result, true);
-        $api = array(
-            'method' => 'GET',
-            'url'    => 'http://lyrics.kugou.com/download',
-            'body'   => array(
-                'charset'   => 'utf8',
-                'accesskey' => $result['candidates'][0]['accesskey'],
-                'id'        => $result['candidates'][0]['id'],
-                'client'    => 'mobi',
-                'fmt'       => 'lrc',
-                'ver'       => 1,
-            ),
-        );
-        $data = json_decode($this->exec($api), true);
-        $arr = array(
-            'lyric'  => base64_decode($data['content']),
-            'tlyric' => '',
-        );
+
+        if (isset($result['candidates'][0])) {
+            $api = array(
+                'method' => 'GET',
+                'url' => 'http://lyrics.kugou.com/download',
+                'body' => array(
+                    'charset' => 'utf8',
+                    'accesskey' => $result['candidates'][0]['accesskey'],
+                    'id' => $result['candidates'][0]['id'],
+                    'client' => 'mobi',
+                    'fmt' => 'lrc',
+                    'ver' => 1,
+                ),
+            );
+            $data = json_decode($this->exec($api), true);
+            $arr = array(
+                'lyric' => base64_decode($data['content']),
+                'tlyric' => '',
+            );
+        } else {
+            $arr = array(
+                'lyric' => '[00:22.08] 暂无歌词',
+                'tlyric' => '',
+            );
+        }
 
         return json_encode($arr);
     }
