@@ -760,7 +760,8 @@ class Meting
             $this->format = $format;
             $data = json_decode($data, true);
             $url = $data['imgUrl'];
-            $url = str_replace('{size}', '400', $url);
+                $size = $size >= 300 ? 400 : $size;
+                $url = str_replace('{size}', $size, $url);
             break;
             case 'baidu':
             $format = $this->format;
@@ -769,6 +770,7 @@ class Meting
             $data = json_decode($data, true);
             if (isset($data['songinfo'])) {
                 $url = isset($data['songinfo']['pic_radio']) ? $data['songinfo']['pic_radio'] : $data['songinfo']['pic_small'];
+                $url = str_replace('_300', '_' . $size, $url);
             } else {
                 $url = $cover;
             }
@@ -812,6 +814,7 @@ class Meting
             );
             case 'kugou':
             return array(
+                'Referer' => 'http://www.kugou.com/webkugouplayer/flash/webKugou.swf',
                 'User-Agent'      => 'IPhone-8990-searchSong',
                 'UNI-UserAgent'   => 'iOS11.4-Phone8990-1009-0-WiFi',
             );
