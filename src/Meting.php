@@ -26,6 +26,8 @@ class Meting
     public $format = false;
     public $header;
 
+    public $uin = '0';
+
     public function __construct($value = 'netease')
     {
         $this->site($value);
@@ -58,6 +60,15 @@ class Meting
     {
         $this->proxy = $value;
 
+        return $this;
+    }
+
+    public function uin($value)
+    {
+        $value = intval($value);
+        if ($value) {
+            $this->uin = str_pad($value, 10, '0', STR_PAD_LEFT);
+        }
         return $this;
     }
 
@@ -1025,7 +1036,7 @@ class Meting
                     'songmid'   => array(),
                     'filename'  => array(),
                     'songtype'  => array(),
-                    'uin'       => '0',
+                    'uin'       => $this->uin,
                     'loginflag' => 1,
                     'platform'  => '20',
                 ),
