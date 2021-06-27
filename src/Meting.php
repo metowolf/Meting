@@ -1369,7 +1369,7 @@ class Meting
 
         return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
-	
+
 	private function kuwo_lyric($result)
     {
         $result = json_decode($result, true);
@@ -1380,7 +1380,7 @@ class Meting
 				$osec = explode('.', $otime)[0];
 				$min = str_pad(floor($osec / 60), 2, "0", STR_PAD_LEFT);
 				$sec = str_pad($osec - $min * 60, 2, "0", STR_PAD_LEFT);
-				$msec = explode('.', $otime)[1]; 
+				$msec = explode('.', $otime)[1];
 				$olyric = $result['data']['lrclist'][$i]['lineLyric'];
 				$kuwolrc = $kuwolrc . '[' . $min . ':' . $sec . '.' . $msec . ']' . $olyric . "\n";
 			}
@@ -1397,7 +1397,7 @@ class Meting
         return json_encode($arr, JSON_UNESCAPED_UNICODE);
     }
 
-    private function format_netease($data)
+    protected function format_netease($data)
     {
         $result = array(
             'id'       => $data['id'],
@@ -1420,7 +1420,7 @@ class Meting
         return $result;
     }
 
-    private function format_tencent($data)
+    protected function format_tencent($data)
     {
         if (isset($data['musicData'])) {
             $data = $data['musicData'];
@@ -1442,7 +1442,7 @@ class Meting
         return $result;
     }
 
-    private function format_xiami($data)
+    protected function format_xiami($data)
     {
         $result = array(
             'id'       => $data['songId'],
@@ -1461,7 +1461,7 @@ class Meting
         return $result;
     }
 
-    private function format_kugou($data)
+    protected function format_kugou($data)
     {
         $result = array(
             'id'       => $data['hash'],
@@ -1479,7 +1479,7 @@ class Meting
         return $result;
     }
 
-    private function format_baidu($data)
+    protected function format_baidu($data)
     {
         $result = array(
             'id'       => $data['song_id'],
@@ -1494,8 +1494,8 @@ class Meting
 
         return $result;
     }
-	
-	private function format_kuwo($data)
+
+	protected function format_kuwo($data)
     {
         $result = array(
             'id'       => $data['rid'],
