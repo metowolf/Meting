@@ -15,7 +15,7 @@
 ## Introduction
 A powerful music API framework to accelerate your development
  + **Elegant** - Easy to use, a standardized format for all music platforms.
- + **Lightweight** - A single-file library that's less than 46KB.
+ + **Lightweight** - A single-file library that's less than 51KB.
  + **Powerful** - Support various music platforms, including Tencent, NetEase, Xiami, KuGou, Baidu and more.
  + **Free** - Under MIT license, need I say more?
 
@@ -80,14 +80,15 @@ echo $data;
  - [Official website](https://i-meto.com)
 
 ## Related Projects
- - [Hermit-X (Wordpress)](https://github.com/MoePlayer/Hermit-X)
- - [APlayer-Typecho](https://github.com/MoePlayer/APlayer-Typecho)
- - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
- - [WP-Player](https://github.com/webjyh/WP-Player)
- - [Meting4Net](https://github.com/yiyungent/Meting4Net)
+ - [MoePlayer/Hermit-X](https://github.com/MoePlayer/Hermit-X)
+ - [MoePlayer/APlayer-Typecho](https://github.com/MoePlayer/APlayer-Typecho)
+ - [mengkunsoft/MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
+ - [webjyh/WP-Player](https://github.com/webjyh/WP-Player)
+ - [yiyungent/Meting4Net](https://github.com/yiyungent/Meting4Net)
+ - [injahow/meting-api](https://github.com/injahow/meting-api)
 
 ## Author
 
 **Meting** © [metowolf](https://github.com/metowolf), Released under the [MIT](./LICENSE) License.<br>
 
-> Blog [@meto](https://i-meto.com) · GitHub [@metowolf](https://github.com/metowolf) · Twitter [@metowolf](https://twitter.com/metowolf) · Telegram Channel [@metooooo](https://t.me/metooooo)
+> Blog [@meto](https://i-meto.com) · GitHub [@metowolf](https://github.com/metowolf) · Twitter [@metowolf](https://twitter.com/metowolf)
