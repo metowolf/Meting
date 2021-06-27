@@ -1107,6 +1107,7 @@ class Meting
         $guid = mt_rand() % 10000000000;
 
         $type = array(
+            array('size_flac', 999, 'F000', 'flac'),
             array('size_320mp3', 320, 'M800', 'mp3'),
             array('size_192aac', 192, 'C600', 'm4a'),
             array('size_128mp3', 128, 'M500', 'mp3'),
@@ -1114,6 +1115,12 @@ class Meting
             array('size_48aac', 48, 'C200', 'm4a'),
             array('size_24aac', 24, 'C100', 'm4a'),
         );
+
+        $uin = '0';
+        preg_match('/uin=(\d+)/', $this->header['Cookie'], $uin_match);
+        if (count($uin_match)) {
+            $uin = $uin_match[1];
+        }
 
         $payload = array(
             'req_0' => array(
@@ -1124,7 +1131,7 @@ class Meting
                     'songmid'   => array(),
                     'filename'  => array(),
                     'songtype'  => array(),
-                    'uin'       => '0',
+                    'uin'       => $uin,
                     'loginflag' => 1,
                     'platform'  => '20',
                 ),
