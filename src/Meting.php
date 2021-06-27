@@ -1276,7 +1276,21 @@ class Meting
 	private function kuwo_url($result)
     {
         $data = json_decode($result, true);
-        return json_encode($data);
+
+        $url = array();
+        if ($data['code'] == 200 && isset($data['url'])) {
+            $url = array(
+                'url' => $data['url'],
+                'br'  => 128,
+            );
+        } else {
+            $url = array(
+                'url' => '',
+                'br'  => -1,
+            );
+        }
+
+        return json_encode($url);
     }
 
     private function netease_lyric($result)
