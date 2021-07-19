@@ -16,7 +16,7 @@
 A powerful music API framework to accelerate your development
  + **Elegant** - Easy to use, a standardized format for all music platforms.
  + **Lightweight** - A single-file library that's less than 51KB.
- + **Powerful** - Support various music platforms, including Tencent, NetEase, Xiami, KuGou, Baidu and more.
+ + **Powerful** - Support various music platforms, including Tencent, NetEase, Xiami, KuGou, Baidu, Kuwo and more.
  + **Free** - Under MIT license, need I say more?
 
 ## Requirement
