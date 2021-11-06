@@ -721,14 +721,10 @@ class Meting
 			case 'kuwo':
 			$api = array(
 				'method' => 'GET',
-				'url'    => 'http://www.kuwo.cn/url',
+				'url'    => 'http://www.kuwo.cn/api/v1/www/music/playUrl',
 				'body'   => array(
-					'rid'         => $id,
-					'response'    => 'url',
-					'type'        => 'convert_url3',
-					'br'          => '128kmp3',
-					'from'        => 'web',
-					't'           => time(),
+					'mid'         => $id,
+					'type'        => 'music',
 					'httpsStatus' => 1,
 				),
 				'decode' => 'kuwo_url',
@@ -1288,12 +1284,12 @@ class Meting
 
 	private function kuwo_url($result)
     {
-        $data = json_decode($result, true);
+        $result = json_decode($result, true);
 
         $url = array();
-        if ($data['code'] == 200 && isset($data['url'])) {
+        if ($result['code'] == 200 && isset($result['data']['url'])) {
             $url = array(
-                'url' => $data['url'],
+                'url' => $result['data']['url'],
                 'br'  => 128,
             );
         } else {
