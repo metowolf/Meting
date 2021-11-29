@@ -79,6 +79,8 @@ echo $data;
  - [APlayer-Typecho](https://github.com/MoePlayer/APlayer-Typecho)
  - [MKOnlineMusicPlayer](https://github.com/mengkunsoft/MKOnlineMusicPlayer)
  - [WP-Player](https://github.com/webjyh/WP-Player)
+ - [mPlayer2](https://github.com/dodododooo/mPlayer2)
+
 
 ## Author
 
