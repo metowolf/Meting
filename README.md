@@ -86,6 +86,8 @@ echo $data;
  - [webjyh/WP-Player](https://github.com/webjyh/WP-Player)
  - [yiyungent/Meting4Net](https://github.com/yiyungent/Meting4Net)
  - [injahow/meting-api](https://github.com/injahow/meting-api)
+ - [mPlayer2](https://github.com/dodododooo/mPlayer2)
+
 
 ## Author
 
