@@ -87,7 +87,7 @@ echo $data;
  - [yiyungent/Meting4Net](https://github.com/yiyungent/Meting4Net)
  - [injahow/meting-api](https://github.com/injahow/meting-api)
  - [mPlayer2](https://github.com/dodododooo/mPlayer2)
-
+ - [guanguans/music-dl](https://github.com/guanguans/music-dl)
 
 ## Author
 
