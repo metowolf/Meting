@@ -175,18 +175,11 @@ class Meting
             case 'tencent':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
+                'url'    => 'https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg',
                 'body'   => array(
-                    'format'   => 'json',
-                    'p'        => isset($option['page']) ? $option['page'] : 1,
-                    'n'        => isset($option['limit']) ? $option['limit'] : 30,
-                    'w'        => $keyword,
-                    'aggr'     => 1,
-                    'lossless' => 1,
-                    'cr'       => 1,
-                    'new_json' => 1,
+                    'key'        => $keyword
                 ),
-                'format' => 'data.song.list',
+                'format' => 'data.song.itemlist',
             );
             break;
             case 'xiami':
@@ -1452,15 +1445,14 @@ class Meting
             'id'       => $data['mid'],
             'name'     => $data['name'],
             'artist'   => array(),
-            'album'    => trim($data['album']['title']),
-            'pic_id'   => $data['album']['mid'],
+            'album'    => $data['mid'],
+            'pic_id'   => $data['mid'],
             'url_id'   => $data['mid'],
             'lyric_id' => $data['mid'],
             'source'   => 'tencent',
         );
-        foreach ($data['singer'] as $vo) {
-            $result['artist'][] = $vo['name'];
-        }
+        $result['artist'][] = $data['singer'];
+
 
         return $result;
     }
