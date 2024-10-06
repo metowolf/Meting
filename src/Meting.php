@@ -544,18 +544,72 @@ class Meting
     {
         switch ($this->server) {
             case 'netease':
-            $api = array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/v6/playlist/detail',
-                'body'   => array(
-                    's'  => '0',
-                    'id' => $id,
-                    'n'  => '1000',
-                    't'  => '0',
-                ),
-                'encode' => 'netease_AESCBC',
-                'format' => 'playlist.tracks',
-            );
+            $api = [
+                "method" => "POST",
+                "url" => "https://music.163.com/api/v6/playlist/detail",
+                "body" => [
+                    "id" => $id,
+                    "offset" => "0",
+                    "total" => "True",
+                    "limit" => "100000",
+                    "n" => "100000",
+                ],
+                "encode" => "netease_AESCBC",
+            ];
+            $playlistData = json_decode($this->exec($api), true);
+            $trackIds = $playlistData["playlist"]["trackIds"];
+            $allTracks = [];
+            $idBatches = array_chunk(array_column($trackIds, "id"), 500);
+
+            foreach ($idBatches as $batch) {
+                // Convert the batch into the proper format
+                $songIds = array_map(function ($id) {
+                    return ["id" => $id, "v" => 0]; // Using 'v' => 0 as per your suggestion
+                }, $batch);
+
+                // Fetch the song details for each batch
+                $songApi = [
+                    "method" => "POST",
+                    "url" => "https://music.163.com/api/v3/song/detail/",
+                    "body" => [
+                        "c" => json_encode($songIds),
+                    ],
+                    "encode" => "netease_AESCBC",
+                ];
+                $songData = $this->exec($songApi);
+                // Merge songs data into allTracks
+                $allTracks = array_merge(
+                    $allTracks,
+                    json_decode($songData, true)["songs"]
+                );
+            }
+            $tmp = array_map(function ($data) {
+                $result = [
+                    "id" => $data["id"],
+                    "name" => $data["name"],
+                    "artist" => [],
+                    "album" => $data["al"]["name"],
+                    "pic_id" => isset($data["al"]["pic_str"])
+                        ? $data["al"]["pic_str"]
+                        : $data["al"]["pic"],
+                    "url_id" => $data["id"],
+                    "lyric_id" => $data["id"],
+                    "source" => "netease",
+                ];
+                if (isset($data["al"]["picUrl"])) {
+                    preg_match(
+                        "/\/(\d+)\./",
+                        $data["al"]["picUrl"],
+                        $match
+                    );
+                    $result["pic_id"] = $match[1];
+                }
+                foreach ($data["ar"] as $vo) {
+                    $result["artist"][] = $vo["name"];
+                }
+                return $result;
+            }, $allTracks);
+            return json_encode($tmp);
             break;
             case 'tencent':
             $api = array(
@@ -645,7 +699,7 @@ class Meting
                 'url'    => 'http://music.163.com/api/song/enhance/player/url',
                 'body'   => array(
                     'ids' => array($id),
-                    'br'  => $br * 1000,
+                    'br'  => $br * 999999,
                 ),
                 'encode' => 'netease_AESCBC',
                 'decode' => 'netease_url',
@@ -997,7 +1051,7 @@ class Meting
         }
 
         if (extension_loaded('bcmath')) {
-            $skey = strrev(utf8_encode($skey));
+            $skey = strrev(mb_convert_encoding($skey, 'UTF-8', 'ISO-8859-1'));
             $skey = $this->bchexdec($this->str2hex($skey));
             $skey = bcpowmod($skey, $pubkey, $modulus);
             $skey = $this->bcdechex($skey);
@@ -1090,7 +1144,7 @@ class Meting
             $url = array(
                 'url'  => $data['data'][0]['url'],
                 'size' => $data['data'][0]['size'],
-                'br'   => $data['data'][0]['br'] / 1000,
+                'br'   => $data['data'][0]['br'] / 999999,
             );
         } else {
             $url = array(
