@@ -8,20 +8,24 @@ Meting Node.js 版本是一个强大的音乐 API 框架，用于加速音乐相
 
 ## 开发相关命令
 
-### 运行和测试
+### 构建和测试
 ```bash
-# 运行示例
+# 构建库文件（生成 ESM 和 CJS 格式）
+npm run build
+
+# 开发模式（文件监听自动构建）
+npm run dev
+
+# 运行完整测试（会先构建）
+npm test
+
+# 运行示例代码
 npm start
 # 或
-node example/example.js
-
-# 运行测试
-npm test  
-# 或
-node test/test.js
-
-# 直接运行示例（替代命令）
 npm run example
+
+# 直接测试特定文件（需要先构建）
+node test/test.js           # 完整平台测试
 ```
 
 ### 环境要求
@@ -30,34 +34,29 @@ npm run example
 
 ## 核心架构
 
-### 单文件设计
-- 整个框架只有一个核心文件：`lib/meting.js`
-- 使用 ES6 类设计，支持链式调用
-- 基于 Promise 的异步 API，支持 async/await
+### Provider 模式设计
+项目采用 Provider 模式重构，实现了真正的内部闭环设计：
 
-### 主要功能模块
-1. **平台管理** - `site(server)` 方法切换不同音乐平台
-2. **搜索功能** - `search(keyword, option)` 异步搜索歌曲、专辑、艺术家
-3. **歌曲详情** - `song(id)` 异步获取单首歌曲信息
-4. **专辑管理** - `album(id)` 异步获取专辑内容
-5. **艺术家管理** - `artist(id, limit)` 异步获取艺术家作品
-6. **播放列表** - `playlist(id)` 异步获取歌单内容
-7. **音频链接** - `url(id, br)` 异步获取音频播放链接
-8. **歌词获取** - `lyric(id)` 异步获取歌词内容
-9. **封面图片** - `pic(id, size)` 异步获取专辑封面
+- **主 Meting 类** (`src/meting.js`): 纯粹的协调者，负责平台切换和 API 委托
+- **Provider 工厂** (`src/providers/index.js`): 管理所有平台 Provider 的创建和注册
+- **基础 Provider** (`src/providers/base.js`): 定义统一接口和默认实现
+- **平台 Provider** (`src/providers/{platform}.js`): 每个音乐平台的独立实现
 
-### 内部方法架构
-- `_exec(api)` - 执行 API 请求的核心方法
-- `_curl(url, payload, headerOnly)` - HTTP 请求处理方法
-- `_curlset()` - 设置不同平台的请求头
-- `_clean(raw, rule)` - 数据格式化和清理
-- 各平台专用的编码/解码方法（如 `netease_AESCBC`, `xiami_sign` 等）
+### 关键设计原则
 
-### 异步设计特点
-- 所有 API 方法都返回 Promise
-- 支持 async/await 语法
-- 错误处理通过 try/catch 机制
-- 内置请求延迟机制防止频率限制
+1. **内部闭环**: 每个 Provider 完全独立处理自己的编码/解码逻辑，通过 `handleEncode()` 和 `handleDecode()` 方法
+2. **单一职责**: 每个文件只负责一个平台或一个功能模块
+3. **无方法映射**: 避免了主类中的方法名映射，Provider 内部直接处理特定逻辑
+
+### 执行流程
+```
+用户 API 调用 → 主 Meting 类 → Provider.executeRequest() → 平台特定处理 → 返回标准化结果
+```
+
+### 版本号管理
+- 源码中使用 `__VERSION__` 占位符
+- 构建时通过 Rollup 自定义插件注入 package.json 中的实际版本号
+- 避免运行时文件系统读取，提升性能
 
 ## 重要设计模式
 
@@ -65,10 +64,9 @@ npm run example
 每个音乐平台都有对应的格式化方法，统一数据结构：
 - 各平台返回统一的 JSON 格式
 - `format(true)` 开启时进行数据标准化
-- 支持原始数据获取 `format(false)`
 
 ### 策略模式
-不同平台的请求处理策略通过方法映射实现：
+不同平台的请求处理策略通过 Provider 实现：
 - 每个平台有独特的 API 端点配置
 - 平台特定的加密和签名方式
 - 动态的请求头和参数处理
@@ -78,6 +76,48 @@ npm run example
 - 虾米音乐：签名验证机制
 - 百度音乐：AES 加密
 - 使用 Node.js 内置 crypto 模块，无外部依赖
+
+## 添加新平台
+
+添加新平台的完整流程：
+
+1. 在 `src/providers/` 下创建新的 Provider 文件
+2. 继承 `BaseProvider` 并实现所有必需方法
+3. 实现平台特定的 `handleEncode()` 和 `handleDecode()` 方法
+4. 在 `src/providers/index.js` 中注册新 Provider
+5. 添加对应的测试用例
+
+```javascript
+// src/providers/newplatform.js
+import BaseProvider from './base.js';
+
+export default class NewPlatformProvider extends BaseProvider {
+  constructor(meting) {
+    super(meting);
+    this.name = 'newplatform';
+  }
+
+  getHeaders() {
+    // 实现平台特定的请求头
+  }
+
+  search(keyword, option = {}) {
+    // 实现搜索逻辑
+  }
+
+  async handleEncode(api) {
+    // 处理平台特定的编码逻辑
+    return api;
+  }
+
+  async handleDecode(decodeType, data) {
+    // 处理平台特定的解码逻辑
+    return data;
+  }
+
+  // ... 实现其他必需方法
+}
+```
 
 ## 数据格式
 
@@ -118,3 +158,10 @@ try {
   const fallback = await meting.search('关键词');
 }
 ```
+
+## 构建系统
+
+- 使用 Rollup 构建 ESM (`lib/meting.esm.js`) 和 CJS (`lib/meting.js`) 两种格式
+- 构建时版本号注入，无运行时开销
+- 支持开发模式下的文件监听自动构建
+- 构建前会自动进行测试验证

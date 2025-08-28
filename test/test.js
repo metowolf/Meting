@@ -2,7 +2,7 @@
  * Meting Node.js 基础测试
  */
 
-import Meting from '../lib/meting.esm.js';
+import Meting from '../src/meting.js';
 
 async function runTests() {
   console.log('=== Meting Node.js 基础测试 ===\n');
