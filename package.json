@@ -1,9 +1,14 @@
 {
   "name": "@meting/core",
-  "version": "1.5.12",
+  "version": "1.5.13",
   "description": "A powerful music API framework to accelerate development - Node.js port. Support Netease, Tencent, Xiami, Kugou, Baidu, Kuwo music platforms.",
-  "main": "lib/meting.js",
+  "main": "./lib/meting.js",
+  "module": "./lib/meting.esm.js",
   "type": "module",
+  "exports": {
+    "import": "./lib/meting.esm.js",
+    "require": "./lib/meting.js"
+  },
   "files": [
     "lib/",
     "LICENSE"
