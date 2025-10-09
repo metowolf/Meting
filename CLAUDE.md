@@ -26,6 +26,21 @@ npm run example
 
 # 直接测试特定文件（需要先构建）
 node test/test.js           # 完整平台测试
+node test/example.js        # 运行示例代码
+```
+
+### 单独测试命令
+```bash
+# 快速测试单个平台（需要先构建）
+node -e "
+import Meting from './lib/meting.js';
+const m = new Meting('netease');
+m.format(true);
+m.search('test', { limit: 5 }).then(console.log);
+"
+
+# 验证版本号注入
+node -e "import Meting from './lib/meting.js'; console.log('Version:', (new Meting()).VERSION)"
 ```
 
 ### 环境要求
@@ -41,6 +56,7 @@ node test/test.js           # 完整平台测试
 - **Provider 工厂** (`src/providers/index.js`): 管理所有平台 Provider 的创建和注册
 - **基础 Provider** (`src/providers/base.js`): 定义统一接口和默认实现
 - **平台 Provider** (`src/providers/{platform}.js`): 每个音乐平台的独立实现
+- **统一 EAPI 流程**: 所有请求都通过统一的 EAPI 请求栈执行，无需用户选择不同的协议
 
 ### 关键设计原则
 
@@ -53,10 +69,55 @@ node test/test.js           # 完整平台测试
 用户 API 调用 → 主 Meting 类 → Provider.executeRequest() → 平台特定处理 → 返回标准化结果
 ```
 
+**详细请求处理流程：**
+1. **API 调用**: `meting.search('关键词', { page: 1, limit: 30 })` 等公共方法
+2. **Provider 委托**: 主类调用对应 Provider 的方法获取 API 配置
+3. **编码处理**: 如果需要，Provider 调用 `handleEncode()` 进行请求加密
+4. **HTTP 请求**: 使用内置 fetch API 发送统一的 EAPI 请求，包含重试机制和超时控制
+5. **解码处理**: 如果需要，Provider 调用 `handleDecode()` 进行响应解密
+6. **数据格式化**: 根据 `format()` 设置决定是否标准化数据结构
+7. **结果返回**: 返回 JSON 字符串格式的处理结果
+
+## 公共 API
+- `search(keyword, option = {})`: 根据关键词搜索音乐，返回 Promise；`option` 支持 `type`（分类，默认 1 即歌曲）、`page`（页码，默认 1）、`limit`（每页数量，默认 30）
+- `song(id)`: 获取歌曲详情
+- `album(id)`: 获取专辑信息
+- `artist(id, limit = 50)`: 获取艺术家作品列表
+- `playlist(id)`: 获取播放列表
+- `url(id, br = 320)`: 获取音频播放地址，可指定码率（kbps）
+- `lyric(id)`: 获取歌词
+- `pic(id, size = 300)`: 获取封面图片信息，可指定尺寸
+
+### 错误处理机制
+- **网络错误**: 自动重试 3 次，每次间隔 1 秒
+- **超时控制**: 默认 20 秒请求超时
+- **平台切换**: 支持动态切换音乐平台作为降级方案
+- **错误状态**: 错误信息存储在 `meting.error` 和 `meting.status` 属性中
+
 ### 版本号管理
 - 源码中使用 `__VERSION__` 占位符
 - 构建时通过 Rollup 自定义插件注入 package.json 中的实际版本号
 - 避免运行时文件系统读取，提升性能
+
+**构建注入机制详情：**
+```javascript
+// rollup.config.js 中的版本注入插件
+{
+  name: 'inject-version',
+  transform(code, id) {
+    if (id.endsWith('src/meting.js')) {
+      return code.replace('__VERSION__', packageInfo.version);
+    }
+    return null;
+  }
+}
+```
+
+**使用方式：**
+```javascript
+const meting = new Meting();
+console.log(meting.VERSION); // 输出实际版本号，如 "1.5.13"
+```
 
 ## 重要设计模式
 
@@ -102,7 +163,7 @@ export default class NewPlatformProvider extends BaseProvider {
   }
 
   search(keyword, option = {}) {
-    // 实现搜索逻辑
+    // 实现搜索逻辑并返回统一的 EAPI 配置
   }
 
   async handleEncode(api) {
@@ -149,19 +210,41 @@ export default class NewPlatformProvider extends BaseProvider {
 
 ### 错误处理模式
 ```javascript
+const meting = new Meting('netease');
+meting.format(true);
+
 try {
-  const result = await meting.search('关键词');
-  // 处理结果
+  const result = await meting.search('关键词', { page: 1, limit: 30 });
+  // 处理统一格式的结果
 } catch (error) {
-  // 可以尝试切换平台重试
+  // 记录错误并尝试切换平台重试
+  console.error(meting.status);
   meting.site('tencent');
-  const fallback = await meting.search('关键词');
+  const fallback = await meting.search('关键词', { page: 1, limit: 30 });
 }
 ```
 
 ## 构建系统
 
-- 使用 Rollup 构建 ESM (`lib/meting.esm.js`) 和 CJS (`lib/meting.js`) 两种格式
-- 构建时版本号注入，无运行时开销
-- 支持开发模式下的文件监听自动构建
-- 构建前会自动进行测试验证
+### Rollup 配置特点
+- **双格式输出**: 同时生成 ESM (`lib/meting.esm.js`) 和 CJS (`lib/meting.js`) 格式
+- **版本号注入**: 构建时自动替换源码中的 `__VERSION__` 占位符
+- **依赖管理**: 仅使用 Node.js 内置模块，external 配置包含 `crypto`, `url`, `fs`, `path`
+- **代码压缩**: 使用 terser 插件进行代码压缩优化
+- **开发模式**: 支持文件监听自动构建 (`npm run dev`)
+
+### 构建流程
+```bash
+# 开发流程
+npm run dev    # 监听文件变化，自动重新构建
+
+# 生产构建
+npm run build  # 构建两种格式到 lib/ 目录
+npm test       # 构建后运行测试验证
+npm publish    # 发布前会自动执行 prepublishOnly 构建命令
+```
+
+### 输出文件说明
+- `lib/meting.esm.js`: ES Module 格式，用于现代打包工具
+- `lib/meting.js`: CommonJS 格式，用于 Node.js require 语法
+- 两种格式都经过压缩优化，文件大小约 30-40KB

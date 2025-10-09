@@ -1,6 +1,10 @@
 import crypto from 'crypto';
 import BaseProvider from './base.js';
 
+// eapi 相关常量
+const EAPI_KEY = 'e82ckenh8dichen8';
+const EAPI_IV = Buffer.from('0102030405060708');
+
 /**
  * 网易云音乐平台提供者
  */
@@ -11,16 +15,18 @@ export default class NeteaseProvider extends BaseProvider {
   }
 
   /**
-   * 获取网易云音乐的请求头配置
+   * 获取网易云音乐的请求头配置（EAPI）
    */
   getHeaders() {
+    const timestamp = Date.now().toString();
+    const deviceId = this._generateDeviceId();
+
     return {
-      'Referer': 'https://music.163.com/',
-      'Cookie': 'appver=8.2.30; os=iPhone OS; osver=15.0; EVNSM=1.0.0; buildver=2206; channel=distribution; machineid=iPhone13.3',
-      'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 CloudMusic/0.1.1 NeteaseMusic/8.2.30',
-      'X-Real-IP': this._generateRandomIP(),
+      'Referer': 'music.163.com',
+      'Cookie': `osver=android; appver=8.7.01; os=android; deviceId=${deviceId}; channel=netease; requestId=${timestamp}_${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}; __remember_me=true`,
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 11; M2007J3SC Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045714 Mobile Safari/537.36 NeteaseMusic/8.7.01',
       'Accept': '*/*',
-      'Accept-Language': 'zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
+      'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
       'Connection': 'keep-alive',
       'Content-Type': 'application/x-www-form-urlencoded'
     };
@@ -40,7 +46,7 @@ export default class NeteaseProvider extends BaseProvider {
         total: 'true',
         offset: (option.page && option.limit) ? (option.page - 1) * option.limit : 0
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       format: 'result.songs'
     };
   }
@@ -55,7 +61,7 @@ export default class NeteaseProvider extends BaseProvider {
       body: {
         c: `[{"id":${id},"v":0}]`
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       format: 'songs'
     };
   }
@@ -75,7 +81,7 @@ export default class NeteaseProvider extends BaseProvider {
         ext: 'true',
         private_cloud: 'true'
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       format: 'songs'
     };
   }
@@ -93,7 +99,7 @@ export default class NeteaseProvider extends BaseProvider {
         top: limit,
         id: id
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       format: 'hotSongs'
     };
   }
@@ -111,7 +117,7 @@ export default class NeteaseProvider extends BaseProvider {
         n: '1000',
         t: '0'
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       format: 'playlist.tracks'
     };
   }
@@ -127,7 +133,7 @@ export default class NeteaseProvider extends BaseProvider {
         ids: [id],
         br: br * 1000
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       decode: 'netease_url'
     };
   }
@@ -146,7 +152,7 @@ export default class NeteaseProvider extends BaseProvider {
         kv: -1,
         tv: -1
       },
-      encode: 'netease_AESCBC',
+      encode: 'netease_eapi',
       decode: 'netease_lyric'
     };
   }
@@ -192,52 +198,38 @@ export default class NeteaseProvider extends BaseProvider {
    * 处理网易云音乐的编码逻辑
    */
   async handleEncode(api) {
-    if (api.encode === 'netease_AESCBC') {
-      return this.aesEncrypt(api);
+    if (api.encode === 'netease_eapi') {
+      return this.eapiEncrypt(api);
     }
     return api;
   }
 
   /**
-   * 网易云音乐 AES 加密
+   * 网易云音乐 EAPI 加密
    */
-  async aesEncrypt(api) {
-    const modulus = '157794750267131502212476817800345498121872783333389747424011531025366277535262539913701806290766479189477533597854989606803194253978660329941980786072432806427833685472618792592200595694346872951301770580765135349259590167490536138082469680638514416594216629258349130257685001248172188325316586707301643237607';
-    const pubkey = '65537';
-    const nonce = '0CoJUm6Qyw8W8jud';
-    const vi = '0102030405060708';
-    
-    // 生成随机密钥
-    const skey = this._getRandomHex(16);
-    
-    let body = JSON.stringify(api.body);
-    
-    // 两次 AES 加密
-    const cipher1 = crypto.createCipheriv('aes-128-cbc', nonce, vi);
-    cipher1.setAutoPadding(true);
-    let encrypted1 = cipher1.update(body, 'utf8', 'base64');
-    encrypted1 += cipher1.final('base64');
-    
-    const cipher2 = crypto.createCipheriv('aes-128-cbc', skey, vi);
-    cipher2.setAutoPadding(true);
-    let encrypted2 = cipher2.update(encrypted1, 'utf8', 'base64');
-    encrypted2 += cipher2.final('base64');
-    
-    // RSA 加密密钥
-    const reversedSkey = skey.split('').reverse().join('');
-    const skeyBigInt = this._bchexdec(this._str2hex(reversedSkey));
-    const modBigInt = BigInt(modulus);
-    const pubkeyBigInt = BigInt(pubkey);
-    
-    const encryptedSkey = this._powMod(skeyBigInt, pubkeyBigInt, modBigInt);
-    const encSecKey = encryptedSkey.toString(16).padStart(256, '0');
-    
-    api.url = api.url.replace('/api/', '/weapi/');
+  async eapiEncrypt(api) {
+    const text = JSON.stringify(api.body);
+    const url = api.url.replace(/https?:\/\/[^\/]+/, '');
+
+    // 构建 eapi 加密消息
+    const message = `nobody${url}use${text}md5forencrypt`;
+    const digest = crypto.createHash('md5').update(message).digest('hex');
+    const data = `${url}-36cd479b6b5-${text}-36cd479b6b5-${digest}`;
+
+    // AES-128-ECB 加密
+    const cipher = crypto.createCipheriv('aes-128-ecb', Buffer.from(EAPI_KEY, 'utf8'), null);
+    cipher.setAutoPadding(true);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    // 转换 URL 路径
+    api.url = api.url.replace('/api/', '/eapi/');
+
+    // 构建 eapi 请求体
     api.body = {
-      params: encrypted2,
-      encSecKey: encSecKey
+      params: encrypted.toUpperCase()
     };
-    
+
     return api;
   }
 
@@ -307,6 +299,16 @@ export default class NeteaseProvider extends BaseProvider {
     return crypto.randomBytes(Math.ceil(length / 2))
       .toString('hex')
       .slice(0, length);
+  }
+
+  /**
+   * 生成设备 ID
+   */
+  _generateDeviceId() {
+    // 生成类似移动端的设备 ID
+    const randomBytes = crypto.randomBytes(16);
+    const deviceId = randomBytes.toString('hex').toUpperCase();
+    return deviceId;
   }
 
   /**

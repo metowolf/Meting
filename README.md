@@ -51,7 +51,7 @@ meting.format(true);
 
 // Search for songs
 try {
-  const searchResult = await meting.search('Hello Adele', { limit: 10 });
+  const searchResult = await meting.search('Hello Adele', { page: 1, limit: 10 });
   const songs = JSON.parse(searchResult);
   console.log(songs);
 } catch (error) {
@@ -131,13 +131,18 @@ meting.format(enable)  // Enable/disable data formatting
 
 ```javascript
 // Search for songs, albums, or artists
-await meting.search(keyword, options)
-
-// Options:
-// - type: 'song' (default), 'album', 'artist', 'playlist'
-// - page: page number (default: 1)
-// - limit: results per page (default: 30)
+await meting.search(keyword, {
+  type: 1,
+  page: 1,
+  limit: 30,
+});
 ```
+
+#### Search Options
+
+- `type` (number, optional) - Search category for providers that support it. NetEase uses `1` for songs (default), `10` for albums, `100` for artists, etc.
+- `page` (number, optional) - Page number starting from 1. Defaults to `1`.
+- `limit` (number, optional) - Number of results per page. Defaults to `30`.
 
 #### Music Information
 

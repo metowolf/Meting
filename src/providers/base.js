@@ -19,7 +19,7 @@ export default class BaseProvider {
   /**
    * 搜索歌曲
    * @param {string} keyword 搜索关键词
-   * @param {Object} option 搜索选项
+   * @param {Object} [option={}] 搜索选项
    * @returns {Object} API 配置对象
    */
   search(keyword, option = {}) {

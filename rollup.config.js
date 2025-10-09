@@ -16,7 +16,7 @@ export default {
     {
       file: 'lib/meting.js',
       format: 'cjs',
-      exports: 'default'
+      exports: 'auto'
     }
   ],
   plugins: [
@@ -34,7 +34,14 @@ export default {
         return null;
       }
     },
-    terser()
+    terser({
+      format: {
+        comments: false
+      },
+      compress: {
+        drop_console: false
+      }
+    })
   ],
   external: ['crypto', 'url', 'fs', 'path']
 };
