@@ -1,0 +1,68 @@
+{
+  "name": "@meting/core",
+  "version": "1.5.13",
+  "description": "A powerful music API framework to accelerate development - Node.js port. Support Netease, Tencent, Xiami, Kugou, Baidu, Kuwo music platforms.",
+  "main": "./lib/meting.js",
+  "module": "./lib/meting.esm.js",
+  "type": "module",
+  "exports": {
+    "import": "./lib/meting.esm.js",
+    "require": "./lib/meting.js"
+  },
+  "files": [
+    "lib/",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c --watch",
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && node test/test.js",
+    "example": "npm run build && node test/example.js",
+    "start": "npm run build && node test/example.js"
+  },
+  "keywords": [
+    "music",
+    "api",
+    "netease",
+    "tencent",
+    "xiami",
+    "kugou",
+    "baidu",
+    "kuwo",
+    "nodejs",
+    "lightweight",
+    "music-api",
+    "streaming",
+    "search",
+    "lyrics",
+    "no-dependencies"
+  ],
+  "author": {
+    "name": "metowolf",
+    "email": "i@i-meto.com",
+    "url": "https://i-meto.com"
+  },
+  "contributors": [
+    {
+      "name": "Claude Code",
+      "email": "noreply@anthropic.com",
+      "url": "https://claude.ai/code"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/metowolf/Meting",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metowolf/Meting.git"
+  },
+  "bugs": {
+    "url": "https://github.com/metowolf/Meting/issues"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.49.0"
+  }
+}
