@@ -277,17 +277,52 @@ export default class TencentProvider extends BaseProvider {
   }
 
   /**
+   * 解码HTML实体编码
+   */
+  decodeHtmlEntities(text) {
+    if (!text) return text;
+
+    // 常见HTML实体编码映射
+    const entityMap = {
+      '&apos;': "'",
+      '&quot;': '"',
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&nbsp;': ' '
+    };
+
+    // 替换命名实体
+    let decoded = text;
+    for (const [entity, char] of Object.entries(entityMap)) {
+      decoded = decoded.replace(new RegExp(entity, 'g'), char);
+    }
+
+    // 替换数字实体（如 &#39; &#34; 等）
+    decoded = decoded.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(parseInt(dec, 10));
+    });
+
+    // 替换十六进制实体（如 &#x27; 等）
+    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+
+    return decoded;
+  }
+
+  /**
    * 腾讯音乐歌词解码
    */
   lyricDecode(result) {
     const jsonStr = result.substring(18, result.length - 1);
     const data = JSON.parse(jsonStr);
-    
+
     const lyricData = {
-      lyric: data.lyric ? Buffer.from(data.lyric, 'base64').toString() : '',
-      tlyric: data.trans ? Buffer.from(data.trans, 'base64').toString() : ''
+      lyric: data.lyric ? this.decodeHtmlEntities(Buffer.from(data.lyric, 'base64').toString()) : '',
+      tlyric: data.trans ? this.decodeHtmlEntities(Buffer.from(data.trans, 'base64').toString()) : ''
     };
-    
+
     return JSON.stringify(lyricData);
   }
 }
