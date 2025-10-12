@@ -27,10 +27,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Create .npmrc file
-        run: |
-          echo "//registry.npmjs.org/:_authToken=\${{ secrets.NPM_TOKEN }}" > .npmrc
-          echo "registry=https://registry.npmjs.org/" >> .npmrc
+      - name: Authenticate with private NPM package
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Publish to npm
         run: npm publish --access public
