@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-Meting Node.js 版本是一个强大的音乐 API 框架，用于加速音乐相关应用的开发。这是原版 PHP Meting 项目的 Node.js 移植版本，支持多个主流音乐平台的 API 调用，包括网易云音乐(netease)、腾讯音乐(tencent)、虾米音乐(xiami)、酷狗音乐(kugou)、百度音乐(baidu)和酷我音乐(kuwo)。
+Meting Node.js 版本是一个强大的音乐 API 框架，用于加速音乐相关应用的开发。这是原版 PHP Meting 项目的 Node.js 移植版本，支持多个主流音乐平台的 API 调用，包括网易云音乐(netease)、腾讯音乐(tencent)、酷狗音乐(kugou)、百度音乐(baidu)和酷我音乐(kuwo)。
 
 ## 开发相关命令
 

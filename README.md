@@ -10,7 +10,7 @@ Meting is a powerful music API framework designed to accelerate music-related de
 
 ### Features
 
-- **🎵 Multi-Platform Support** - Supports NetEase Cloud Music, Tencent Music, Xiami, KuGou, Baidu Music, and Kuwo
+- **🎵 Multi-Platform Support** - Supports NetEase Cloud Music, Tencent Music, KuGou, Baidu Music, and Kuwo
 - **🚀 Lightweight & Fast** - Zero external dependencies, built with Node.js native modules only
 - **📱 Modern Async/Await** - Promise-based APIs with full async/await support
 - **🔄 Unified Interface** - Standardized data format across all music platforms
@@ -44,7 +44,7 @@ yarn add @meting/core
 import Meting from '@meting/core';
 
 // Initialize with a music platform
-const meting = new Meting('netease'); // 'netease', 'tencent', 'xiami', 'kugou', 'baidu', 'kuwo'
+const meting = new Meting('netease'); // 'netease', 'tencent', 'kugou', 'baidu', 'kuwo'
 
 // Enable data formatting for consistent output
 meting.format(true);
@@ -115,7 +115,7 @@ musicExample();
 const meting = new Meting(server);
 ```
 
-- `server` (string): Music platform ('netease', 'tencent', 'xiami', 'kugou', 'baidu', 'kuwo')
+- `server` (string): Music platform ('netease', 'tencent', 'kugou', 'baidu', 'kuwo')
 
 ### Core Methods
 
@@ -167,7 +167,6 @@ await meting.pic(id, size)      // Get album artwork
 |----------|------|--------|------|-------|--------|----------|-----|-------|---------|
 | NetEase Cloud Music | `netease` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Tencent Music | `tencent` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Xiami Music | `xiami` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | KuGou Music | `kugou` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Baidu Music | `baidu` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Kuwo Music | `kuwo` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |

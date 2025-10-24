@@ -15,7 +15,6 @@ src/
     ├── base.js             # 基础 Provider 接口
     ├── netease.js          # 网易云音乐 Provider
     ├── tencent.js          # 腾讯音乐 Provider
-    ├── xiami.js            # 虾米音乐 Provider
     ├── kugou.js            # 酷狗音乐 Provider
     ├── baidu.js            # 百度音乐 Provider
     └── kuwo.js             # 酷我音乐 Provider

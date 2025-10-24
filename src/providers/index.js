@@ -1,6 +1,5 @@
 import NeteaseProvider from './netease.js';
 import TencentProvider from './tencent.js';
-import XiamiProvider from './xiami.js';
 import KugouProvider from './kugou.js';
 import BaiduProvider from './baidu.js';
 import KuwoProvider from './kuwo.js';
@@ -12,7 +11,6 @@ export default class ProviderFactory {
   static providers = {
     netease: NeteaseProvider,
     tencent: TencentProvider,
-    xiami: XiamiProvider,
     kugou: KugouProvider,
     baidu: BaiduProvider,
     kuwo: KuwoProvider

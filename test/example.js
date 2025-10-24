@@ -6,7 +6,7 @@ import Meting from '../lib/meting.esm.js';
 
 async function main() {
   // 创建 Meting 实例
-  const meting = new Meting('netease'); // 可选: 'netease', 'tencent', 'xiami', 'kugou', 'baidu', 'kuwo'
+  const meting = new Meting('netease'); // 可选: 'netease', 'tencent', 'kugou', 'baidu', 'kuwo'
   
   // 开启数据格式化
   meting.format(true);
