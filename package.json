@@ -19,6 +19,7 @@
     "prepublishOnly": "npm run build",
     "test": "npm run build && node test/test.js",
     "example": "npm run build && node test/example.js",
+    "api": "npm run build && node server/index.js",
     "start": "npm run build && node test/example.js"
   },
   "keywords": [

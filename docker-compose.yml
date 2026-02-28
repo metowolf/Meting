@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  meting:
+    build: .
+    image: meting-api:latest
+    ports:
+      - "3200:3000"   # 主机 3200 -> 容器 3000
+    environment:
+      - PORT=3000
+    restart: unless-stopped
