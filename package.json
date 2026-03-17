@@ -7,10 +7,12 @@
   "type": "module",
   "exports": {
     "import": "./lib/meting.esm.js",
+    "types": "./global.d.ts",
     "require": "./lib/meting.js"
   },
   "files": [
     "lib/",
+    "global.d.ts",
     "LICENSE"
   ],
   "scripts": {
