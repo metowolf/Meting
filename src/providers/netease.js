@@ -15,15 +15,64 @@ export default class NeteaseProvider extends BaseProvider {
   }
 
   /**
+   * 解析 Cookie 字符串为键值对对象
+   * @param {string} cookieStr - Cookie 字符串
+   * @returns {Object} Cookie 键值对对象
+   */
+  _parseCookie(cookieStr) {
+    const cookies = {};
+    if (!cookieStr) return cookies;
+    
+    cookieStr.split(';').forEach(pair => {
+      const [key, ...valueParts] = pair.trim().split('=');
+      if (key && valueParts.length > 0) {
+        cookies[key.trim()] = valueParts.join('=').trim();
+      }
+    });
+    
+    return cookies;
+  }
+
+  /**
+   * 将 Cookie 键值对对象转换为字符串
+   * @param {Object} cookies - Cookie 键值对对象
+   * @returns {string} Cookie 字符串
+   */
+  _stringifyCookie(cookies) {
+    return Object.entries(cookies)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('; ');
+  }
+
+  /**
    * 获取网易云音乐的请求头配置（EAPI）
+   * 支持 Cookie 合并：用户提供的 Cookie 会覆盖默认 Cookie 中的同名键
    */
   getHeaders() {
     const timestamp = Date.now().toString();
     const deviceId = this._generateDeviceId();
 
+    const defaultCookies = {
+      osver: 'android',
+      appver: '8.7.01',
+      os: 'android',
+      deviceId: deviceId,
+      channel: 'netease',
+      requestId: `${timestamp}_${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}`,
+      __remember_me: 'true'
+    };
+
+    let finalCookies = defaultCookies;
+    if (this.meting.header && this.meting.header['Cookie']) {
+      const userCookies = this._parseCookie(this.meting.header['Cookie']);
+      finalCookies = { ...defaultCookies, ...userCookies };
+    }
+
+    const cookieString = this._stringifyCookie(finalCookies);
+
     return {
       'Referer': 'music.163.com',
-      'Cookie': `osver=android; appver=8.7.01; os=android; deviceId=${deviceId}; channel=netease; requestId=${timestamp}_${Math.floor(Math.random() * 1000).toString().padStart(4, '0')}; __remember_me=true`,
+      'Cookie': cookieString,
       'User-Agent': 'Mozilla/5.0 (Linux; Android 11; M2007J3SC Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.120 MQQBrowser/6.2 TBS/045714 Mobile Safari/537.36 NeteaseMusic/8.7.01',
       'Accept': '*/*',
       'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
