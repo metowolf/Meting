@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2026-10-10
+
+### Fixed
+- **Tencent Music**: Fixed the search API returning error 500
+  - Switched from the offline `client_search_cp` endpoint to `search_for_qq_cp`
+  - Removed `aggr=1` from the request, which broke `p` / `n` paging on the legacy endpoint
+  - `format()` now supports both new (`mid` / `name` / `album.title`) and legacy (`songmid` / `songname` / `albummid` / `albumname`) field layouts
+  - Guarded against missing `singer` / `album` fields in raw responses
+
+## [1.6.1] - 2026-02-27
+
+### Added
+- **KuGou Music**: Added signed `songinfo` endpoint for playback URLs (used automatically when a cookie is provided)
+  - Kept the legacy endpoint as a fallback when no cookie is available
+
+### Fixed
+- Improved KuGou song formatting by preferring the `authors` array and `songName` field
+- Fixed format detection in `base.js` so falsy format values are handled correctly
+
+### Changed
+- Simplified npm authentication in CI by using the `registry-url` built into `setup-node`
+
 ## [1.6.0] - 2025-10-25
 
 ### Removed
@@ -64,10 +86,14 @@ Note: The library will automatically fallback to `'netease'` if an unsupported p
 
 ## Version History
 
+- **v1.6.2** - Tencent Music search API fix
+- **v1.6.1** - KuGou playback URL improvements
 - **v1.6.0** - Removed Xiami Music support (breaking change)
 - **v1.5.14** - Bug fixes and CI improvements
 - **v1.5.13** - Stable release with complete platform support
 
+[1.6.2]: https://github.com/metowolf/Meting/compare/v1.6.1...v1.6.2
+[1.6.1]: https://github.com/metowolf/Meting/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/metowolf/Meting/compare/v1.5.14...v1.6.0
 [1.5.14]: https://github.com/metowolf/Meting/compare/v1.5.13...v1.5.14
 [1.5.13]: https://github.com/metowolf/Meting/releases/tag/v1.5.13
