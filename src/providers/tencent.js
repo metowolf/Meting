@@ -26,20 +26,22 @@ export default class TencentProvider extends BaseProvider {
 
   /**
    * 搜索歌曲
+   *
+   * 注意：旧接口 client_search_cp 已下线（HTTP 500），
+   * 这里改用同域名下仍在服务的 search_for_qq_cp，
+   * 该接口只返回老版字段（songmid/songname/albummid/albumname），
+   * 因此 format() 需要同时兼容新旧两种字段格式。
    */
   search(keyword, option = {}) {
     return {
       method: 'GET',
-      url: 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
+      url: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
       body: {
         format: 'json',
         p: option.page || 1,
         n: option.limit || 30,
-        w: keyword,
-        aggr: 1,
-        lossless: 1,
-        cr: 1,
-        new_json: 1
+        w: keyword
+        // 不要传 aggr=1：老接口下会导致分页/条数（p、n）失效
       },
       format: 'data.song.list'
     };
@@ -160,22 +162,28 @@ export default class TencentProvider extends BaseProvider {
     if (data.musicData) {
       data = data.musicData;
     }
-    
+
+    // 兼容新版字段（mid/name/album.title）与老版字段（songmid/songname/albumname）
+    const mid = data.songmid || data.mid;
+    const album = data.album && data.album.title !== undefined
+      ? data.album.title
+      : (data.albumname || '');
+
     const result = {
-      id: data.mid,
-      name: data.name,
+      id: mid,
+      name: data.songname || data.name,
       artist: [],
-      album: data.album.title.trim(),
-      pic_id: data.album.mid,
-      url_id: data.mid,
-      lyric_id: data.mid,
+      album: String(album || '').trim(),
+      pic_id: (data.album && data.album.mid) || data.albummid,
+      url_id: mid,
+      lyric_id: mid,
       source: 'tencent'
     };
-    
-    data.singer.forEach(singer => {
+
+    (data.singer || []).forEach(singer => {
       result.artist.push(singer.name);
     });
-    
+
     return result;
   }
 
